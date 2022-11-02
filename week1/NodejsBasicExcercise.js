@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import * as fs from "fs";
 // get data from all user
 
 const getUsers = async () => {
@@ -12,7 +13,7 @@ const getUsers = async () => {
 }
 
 const getPostsByUser = async (userId) => {
-    const posts = await fetch('https://jsonplaceholder.typicode.com/users/'+ userId +'/posts');
+    const posts = await fetch('https://jsonplaceholder.typicode.com/users/' + userId + '/posts');
     const postsData = await posts.json();
 
     return postsData.map(post => {
@@ -21,22 +22,43 @@ const getPostsByUser = async (userId) => {
     })
 }
 
-const getCommentsByUser = async (userId) => {
-    const comments = await fetch('https://jsonplaceholder.typicode.com/comments');
-    return comments.json();
+const getCommentsByPost = async (postId) => {
+    const comments = await fetch('https://jsonplaceholder.typicode.com/posts/' + postId + '/comments');
+    const commentsData = await comments.json();
+
+    return commentsData.map(comment => {
+        const {id, postId, name, body} = comment;
+        return {id, postId, name, body};
+    })
 }
 
 
 (async () => {
     try {
+        //get all users data
         const userData = await getUsers();
-        const userDataWithPosts = await Promise.all(userData.map(async user => {
+        const allUsersData = await Promise.all(userData.map(async user => {
             const posts = await getPostsByUser(user.id);
-            return {...user, posts};
+            let comments = [];
+            await Promise.all(posts.map(async post => {
+                const commentsByPost = await getCommentsByPost(post.id);
+                await Promise.all(commentsByPost.map(async comment => {
+                    comments.push(comment);
+                }));
+            }));
+
+            return {...user, posts, comments};
         }));
-        console.log(userDataWithPosts);
+        fs.writeFileSync('./allUserData.json', JSON.stringify(allUsersData))
+
+        //filter user comment > 3
+        const filterUser = allUsersData.filter(user => {
+            return user.comments.length > 3;
+        });
+
+        fs.writeFileSync('./filterUser.json', JSON.stringify(filterUser))
 
     } catch (e) {
-        console.log('Error!, %1', e);
+        console.log('Error! ', e);
     }
 })();
