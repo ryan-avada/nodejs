@@ -39,7 +39,7 @@ const getPostsById = async (postId) => {
 
 (async () => {
     try {
-        //get all users data
+        //2,3. get all users data
         const userData = await getUsers();
         const allUsersData = await Promise.all(userData.map(async user => {
             const posts = await getPostsByUser(user.id);
@@ -55,26 +55,48 @@ const getPostsById = async (postId) => {
         }));
         fs.writeFileSync('./allUserData.json', JSON.stringify(allUsersData))
 
-        //filter user comment > 3
+        //4. filter user comment > 3
         const filterUser = allUsersData.filter(user => {
             return user.comments.length > 3;
         });
 
         fs.writeFileSync('./filterUser.json', JSON.stringify(filterUser))
 
-        //reformat data
+        //5. reformat data
         const usersData = allUsersData.map(user => {
             const commentsCount = user.comments.length;
             const postsCount = user.posts.length;
             return {...user, commentsCount, postsCount};
         })
-        const formatUser = usersData.map(user => {
+        const usersFormatted = usersData.map(user => {
             const {id, name, username, email, commentsCount, postsCount} = user;
             return {id, name, username, email, commentsCount, postsCount};
         });
-        fs.writeFileSync('./reformatUsers.json', JSON.stringify(formatUser))
+        fs.writeFileSync('./reformatUsers.json', JSON.stringify(usersFormatted))
 
-        //get post id = 1 + comment
+        //6. Get user with most comments/posts
+        const userWithMostComments = usersFormatted.reduce(
+            (prev, current) => {
+                return prev.commentsCount > current.commentsCount ? prev : current
+            }
+        )
+        fs.writeFileSync('./userWithMostComments.json', JSON.stringify(userWithMostComments))
+
+        const userWithMostPosts = usersFormatted.reduce(
+            (prev, current) => {
+                return prev.postsCount > current.postsCount ? prev : current
+            }
+        )
+        fs.writeFileSync('./userWithMostPosts.json', JSON.stringify(userWithMostComments))
+
+        //7. sort by postsCount desc
+        const usersEx = await exUsers();
+        const sortUsers = usersFormatted.sort(function (prev, current) {
+            return current.postsCount - prev.postsCount;
+        })
+        fs.writeFileSync('./sortUsersByPostsCount.json', JSON.stringify(sortUsers))
+
+        //8. get post + comment
         const post1 = await getPostsById(1);
         const comments = await getCommentsByPost(post1.id);
         const post1Data = {...post1, comments};
