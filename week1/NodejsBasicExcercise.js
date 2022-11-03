@@ -32,6 +32,10 @@ const getCommentsByPost = async (postId) => {
     })
 }
 
+const getPostsById = async (postId) => {
+    const posts = await fetch('https://jsonplaceholder.typicode.com/posts/'+ postId);
+    return await posts.json();
+}
 
 (async () => {
     try {
@@ -58,6 +62,24 @@ const getCommentsByPost = async (postId) => {
 
         fs.writeFileSync('./filterUser.json', JSON.stringify(filterUser))
 
+        //reformat data
+        const usersData = allUsersData.map(user => {
+            const commentsCount = user.comments.length;
+            const postsCount = user.posts.length;
+            return {...user, commentsCount, postsCount};
+        })
+        const formatUser = usersData.map(user => {
+            const {id, name, username, email, commentsCount, postsCount} = user;
+            return {id, name, username, email, commentsCount, postsCount};
+        });
+        fs.writeFileSync('./reformatUsers.json', JSON.stringify(formatUser))
+
+        //get post id = 1 + comment
+        const post1 = await getPostsById(1);
+        const comments = await getCommentsByPost(post1.id);
+        const post1Data = {...post1, comments};
+
+        fs.writeFileSync('./post1AndComments.json', JSON.stringify(post1Data))
     } catch (e) {
         console.log('Error! ', e);
     }
