@@ -2,9 +2,13 @@ import fetch from 'node-fetch';
 import * as fs from "fs";
 // get data from all user
 
+async function fetchApi (path){
+    const data = await fetch('https://jsonplaceholder.typicode.com/' + path);
+    return data.json();
+}
+
 const getUsers = async () => {
-    const userData = await fetch('https://jsonplaceholder.typicode.com/users');
-    const userJson = await userData.json();
+    const userJson = await fetchApi('users');
 
     return userJson.map(user => {
         const {id, name, username, email} = user;
@@ -13,25 +17,21 @@ const getUsers = async () => {
 }
 
 const getPosts = async () => {
-    const posts = await fetch('https://jsonplaceholder.typicode.com/posts');
-    return await posts.json()
+    return await fetchApi('posts');
 }
 
 const getComments = async () => {
-    const comments = await fetch('https://jsonplaceholder.typicode.com/comments');
-    return await comments.json();
+    return await fetchApi('comments');
 }
 
 const getPostsById = async (postId) => {
-    const posts = await fetch('https://jsonplaceholder.typicode.com/posts/'+ postId);
-    return await posts.json();
+    return await fetchApi('posts/'+ postId);
 }
 
 const getCommentsByPostId = async (postId) => {
-    const comments = await fetch('https://jsonplaceholder.typicode.com/posts/' + postId + '/comments');
-    const commentsData = await comments.json();
+    const comments = await fetchApi('posts/'+ postId + '/comments');
 
-    return commentsData.map(comment => {
+    return comments.map(comment => {
         const {id, postId, name, body} = comment;
         return {id, postId, name, body};
     })
@@ -55,15 +55,8 @@ const getCommentsByPostId = async (postId) => {
                 return postRes;
             })
 
-            let comments = [];
-            posts.map(function (post) {
-                const commentsByPost = commentsData.filter(function (comment) {
-                    return comment.postId === post.id;
-                });
-                commentsByPost.map(function (comment) {
-                    const {id, postId, name, body} = comment;
-                    comments.push({id, postId, name, body});
-                })
+            const comments = commentsData.filter(function(comment) {
+                return comment.email === user.email;
             })
 
             return {...user, posts, comments}
