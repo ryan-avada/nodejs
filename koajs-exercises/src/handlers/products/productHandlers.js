@@ -4,7 +4,21 @@ const fs = require("fs");
 
 async function getProducts(ctx) {
     try {
-        const products = getAllProducts();
+        const { limit, sort } = ctx.query;
+        let products = getAllProducts();
+
+        if (limit) {
+            products = products.slice(0, limit);
+        }
+
+        if (sort === 'asc') {
+            products = sortProduct(products, true);
+        } else if (sort === 'desc') {
+            products = sortProduct(products, false);
+        } else {
+            products = sortProduct(products, false, true);
+        }
+
         ctx.body = {
             data: products
         }
@@ -16,6 +30,24 @@ async function getProducts(ctx) {
             error: e.message
         }
     }
+}
+
+function sortProduct(products, asc = true, sortDefault = false) {
+    if (sortDefault) {
+        return products.sort(function (prev, current) {
+            return prev.id - current.id;
+        })
+    }
+
+    if (asc) {
+        return products.sort(function (prev, current) {
+            return Date.parse(prev.createdAt) - Date.parse(current.createdAt);
+        })
+    }
+
+    return products.sort(function (prev, current) {
+        return Date.parse(current.createdAt) - Date.parse(prev.createdAt);
+    })
 }
 
 async function getProduct (ctx) {
@@ -46,7 +78,9 @@ async function getProduct (ctx) {
 async function save(ctx) {
     try {
         const postData = ctx.request.body;
-        addProduct(postData);
+        const createdAt = new Date(Date.now());
+        const data = {...postData, createdAt}
+        addProduct(data);
 
         ctx.status = 201;
         ctx.body = {

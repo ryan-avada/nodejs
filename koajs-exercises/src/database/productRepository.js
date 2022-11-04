@@ -11,7 +11,13 @@ function getOne(id) {
 }
 
 function add(data) {
-    const updateProducts = [data, ...products];
+    let id = 1 + products.reduce(
+        (prev, current) => {
+            return prev.id > current.id ? prev : current
+        }).id;
+    const newAdded = {id, ...data}
+    const updateProducts = [...products, newAdded];
+
     return fs.writeFileSync('./src/database/products.json', JSON.stringify({
         data: updateProducts
     }))

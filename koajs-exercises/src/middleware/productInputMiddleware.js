@@ -3,10 +3,24 @@ const yup = require('yup');
 async function productInputValidate(ctx, next) {
     try {
         const postData = ctx.request.body;
-        let schema = yup.object.shape({
-            id: yup.number().integer().required(),
-            name: yup.string().required(),
-            price: yup.number()
+        let schema = yup.object().shape({
+            id: yup
+                .number()
+                .positive()
+                .integer(),
+            name: yup
+                .string()
+                .required(),
+            price: yup
+                .number(),
+            image: yup
+                .string(),
+            product: yup
+                .string(),
+            description: yup
+                .string(),
+            color: yup
+                .string()
         });
         await schema.validate(postData);
         next();
