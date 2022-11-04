@@ -5,8 +5,7 @@ const fs = require("fs");
 async function getProducts(ctx) {
     try {
         const { limit, sort } = ctx.query;
-        const { fields } = ctx.query;
-        let products = handleProductsList(getAllProducts(fields), sort, limit);
+        let products = handleProductsList(getAllProducts(), sort, limit);
 
         ctx.body = {
             data: products

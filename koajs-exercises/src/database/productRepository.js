@@ -2,21 +2,32 @@ const fs = require("fs");
 
 const { data: products } = require('./products.json');
 
-function getAll(fields = '') {
+function getAll() {
     return products;
 }
 
 function getOne(id, fields = '') {
-    const product =  products.find(product => product.id === parseInt(id));
-    const {price, name} = product;
-    const fieldArr = fields.split(",");
-    fieldArr.map(field => {
+    const product =  [products.find(product => product.id === parseInt(id))];
 
-    })
-    return {id, name, price};
-
+    return filterByFields(product, fields);
 }
 
+function filterByFields(product, fields) {
+    if (fields) {
+        let productWithCustomFields = [],
+            resultProduct = [];
+        const fieldArr = fields.split(",");
+
+        product.map(item => {
+            fieldArr.map(field => {
+                productWithCustomFields[field] = item[field];
+            })
+        })
+        return Object.assign({}, productWithCustomFields);
+    }
+
+    return product;
+}
 function addAndReplace(data, productId =  null) {
     //check update or create
     let updateProducts;
