@@ -1,23 +1,12 @@
-const { getAll: getAllProducts, getOne: getOneProduct, add: addProduct, fakerData: fakerData } = require('../../database/productRepository.js');
+const { getAll: getAllProducts, getOne: getOneProduct, addAndReplace: addAndReplace, fakerData: fakerData, remove: removeProduct } = require('../../database/productRepository.js');
 const {faker} = require("@faker-js/faker");
 const fs = require("fs");
 
 async function getProducts(ctx) {
     try {
         const { limit, sort } = ctx.query;
-        let products = getAllProducts();
-
-        if (limit) {
-            products = products.slice(0, limit);
-        }
-
-        if (sort === 'asc') {
-            products = sortProduct(products, true);
-        } else if (sort === 'desc') {
-            products = sortProduct(products, false);
-        } else {
-            products = sortProduct(products, false, true);
-        }
+        const { fields } = ctx.query;
+        let products = handleProductsList(getAllProducts(fields), sort, limit);
 
         ctx.body = {
             data: products
@@ -32,31 +21,34 @@ async function getProducts(ctx) {
     }
 }
 
-function sortProduct(products, asc = true, sortDefault = false) {
-    if (sortDefault) {
-        return products.sort(function (prev, current) {
-            return prev.id - current.id;
-        })
-    }
-
-    if (asc) {
-        return products.sort(function (prev, current) {
+function handleProductsList(products, sort, limit) {
+    let productsList =  products.sort(function (prev, current) {
+        if (sort === 'asc') {
             return Date.parse(prev.createdAt) - Date.parse(current.createdAt);
-        })
+        } else if (sort === 'desc') {
+            return Date.parse(current.createdAt) - Date.parse(prev.createdAt);
+        }
+
+        return prev.id - current.id;
+    })
+
+    if (limit) {
+        productsList = productsList.slice(0, limit);
     }
 
-    return products.sort(function (prev, current) {
-        return Date.parse(current.createdAt) - Date.parse(prev.createdAt);
-    })
+    return productsList;
 }
 
 async function getProduct (ctx) {
     try {
-        const {id} = ctx.params;
-        const currentProduct = getOneProduct(id);
-        if (currentProduct) {
+        const { id } = ctx.params;
+        const { fields } = ctx.query;
+
+        let productSelected = getOneProduct(id, fields);
+
+        if (productSelected) {
             return ctx.body = {
-                data: currentProduct
+                data: productSelected
             }
         }
 
@@ -75,12 +67,16 @@ async function getProduct (ctx) {
         }
     }
 }
+
+function filteringByFields(arr, field) {
+
+}
 async function save(ctx) {
     try {
         const postData = ctx.request.body;
         const createdAt = new Date(Date.now());
         const data = {...postData, createdAt}
-        addProduct(data);
+        addAndReplace(data);
 
         ctx.status = 201;
         ctx.body = {
@@ -91,6 +87,60 @@ async function save(ctx) {
         ctx.body =  {
             success: false,
             data: [],
+            error: e.message
+        }
+    }
+}
+
+async function update(ctx) {
+    try {
+        const {id} = ctx.params;
+        const data = ctx.request.body;
+        if (id) {
+            addAndReplace(data, id)
+            ctx.status = 201;
+            return ctx.body = {
+                success: true,
+                data: data
+            }
+        }
+        ctx.status = 404;
+        return ctx.body =  {
+            success: false,
+            data: [],
+            error: 'Product is not found!'
+        }
+    } catch (e) {
+        ctx.status = 404;
+        ctx.body = {
+            success: false,
+            data: [],
+            error: e.message
+        }
+    }
+}
+
+async function remove(ctx) {
+    try {
+        const { id } = ctx.params;
+        if (id) {
+            if (removeProduct(id)) {
+                ctx.status = 201;
+                return ctx.body = {
+                    success: true
+                }
+            }
+        }
+        ctx.status = 404;
+        return ctx.body =  {
+            success: false,
+            data: [],
+            error: 'Product is not found!'
+        }
+    } catch (e) {
+        ctx.status = 404;
+        ctx.body = {
+            success: false,
             error: e.message
         }
     }
@@ -132,10 +182,11 @@ function createRandomProducts(id) {
     };
 }
 
-
 module.exports = {
     getProducts,
     getProduct,
     save,
+    update,
+    remove,
     fakerProducts
 }

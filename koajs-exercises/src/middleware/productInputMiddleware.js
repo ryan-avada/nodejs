@@ -9,8 +9,7 @@ async function productInputValidate(ctx, next) {
                 .positive()
                 .integer(),
             name: yup
-                .string()
-                .required(),
+                .string(),
             price: yup
                 .number(),
             image: yup

@@ -10,5 +10,7 @@ router.get('/products', productHandler.getProducts);
 router.get('/products/:id', productHandler.getProduct);
 router.get('/faker', productHandler.fakerProducts);
 router.post('/products', productInputValidate, productHandler.save);
+router.put('/products/:id', productInputValidate, productHandler.update);
+router.delete('/products/:id', productHandler.remove);
 
 module.exports = router;
