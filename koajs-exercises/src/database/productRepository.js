@@ -7,22 +7,21 @@ function getAll() {
 }
 
 function getOne(id, fields = '') {
-    const product =  [products.find(product => product.id === parseInt(id))];
-
+    const product =  products.find(product => product.id === parseInt(id));
     return filterByFields(product, fields);
 }
 
 function filterByFields(product, fields) {
     if (fields) {
-        let productWithCustomFields = [],
-            resultProduct = [];
+        let productWithCustomFields = [];
         const fieldArr = fields.split(",");
 
-        product.map(item => {
+        [product].map(item => {
             fieldArr.map(field => {
                 productWithCustomFields[field] = item[field];
             })
         })
+
         return Object.assign({}, productWithCustomFields);
     }
 
