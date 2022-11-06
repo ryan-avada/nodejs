@@ -67,9 +67,6 @@ async function getProduct (ctx) {
     }
 }
 
-function filteringByFields(arr, field) {
-
-}
 async function save(ctx) {
     try {
         const postData = ctx.request.body;
