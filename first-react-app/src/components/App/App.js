@@ -1,5 +1,4 @@
 import './App.css';
-import {useEffect, useState} from "react";
 import React from "react";
 import useFetchApi from "../../hooks/useFetchApi";
 
