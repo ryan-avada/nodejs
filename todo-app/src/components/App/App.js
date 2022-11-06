@@ -33,6 +33,10 @@ function FrameExample() {
     const [searchActive, setSearchActive] = useState(false);
     const [searchValue, setSearchValue] = useState('');
     const [mobileNavigationActive, setMobileNavigationActive] = useState(false);
+    const [appStatus, setAppStatus] = useState(false);
+
+    const handleToggle = useCallback(() => setAppStatus((active) => !active), []);
+
 
     const handleSearchResultsDismiss = useCallback(() => {
         setSearchActive(false);
@@ -55,7 +59,6 @@ function FrameExample() {
         [],
     );
 
-
     const userMenuMarkup = (
         <TopBar.UserMenu
             actions=""
@@ -63,12 +66,12 @@ function FrameExample() {
             detail=""
             initials="A"
             open=""
-        />
+            onToggle=""/>
     );
 
     const searchResultsMarkup = (
         <ActionList
-            items={[{content: 'Shopify help center'}, {content: 'Community forums'}]}
+            items={[{content: 'Avada'}, {content: 'Mageplaza'}]}
         />
     );
 
@@ -123,33 +126,24 @@ function FrameExample() {
         <a id="SkipToContentTarget" ref={skipToContentRef} tabIndex={-1} />
     );
 
-    const SettingAppStatus = () => {
-        const [active, setActive] = useState(false);
 
-        const handleToggle = useCallback(() => setActive((active) => !active), []);
-
-        const contentStatus = active ? 'Deactivate' : 'Activate';
-        const textStatus = active ? 'activated' : 'deactivated';
-
-        return (
-            <SettingToggle
-                action={{
-                    content: contentStatus,
-                    onAction: handleToggle,
-                }}
-                enabled={active}
-            >
-                This setting is <TextStyle variation="strong">{textStatus}</TextStyle>.
-            </SettingToggle>
-        );
-    }
+    const contentStatus = appStatus ? 'Deactivate' : 'Activate';
+    const textStatus = appStatus ? 'activated' : 'deactivated';
 
     const actualPageMarkup = (
         <Page title="Home" fullWidth>
             <Layout>
                 {skipToContentTarget}
                 <Layout.Section>
-                    <SettingAppStatus />
+                    <SettingToggle
+                        action={{
+                            content: contentStatus,
+                            onAction: handleToggle,
+                        }}
+                        enabled={appStatus}
+                    >
+                        App status is <TextStyle variation="strong">{textStatus}</TextStyle>.
+                    </SettingToggle>
                 </Layout.Section>
             </Layout>
         </Page>
@@ -173,11 +167,8 @@ function FrameExample() {
     const pageMarkup = isLoading ? loadingPageMarkup : actualPageMarkup;
 
     const logo = {
-        width: 124,
-        topBarSource:
-            "https://cdn.shopify.com/s/files/1/0446/6937/files/jaded-pixel-logo-color.svg?6215648040070010999",
-        url: "http://jadedpixel.com",
-        accessibilityLabel: "Jaded Pixel"
+        width: 200,
+        topBarSource: "https://cdn.shopify.com/s/files/1/0446/6937/files/jaded-pixel-logo-color.svg?6215648040070010999"
     };
 
     return (
