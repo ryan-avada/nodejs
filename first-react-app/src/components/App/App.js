@@ -1,36 +1,35 @@
 import './App.css';
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import React from "react";
+import useFetchApi from "../../hooks/useFetchApi";
 
 function App() {
-    const [input, setInput] = useState({
-        firstName: "",
-        lastName: ""
-    });
-
-    const handleChangeInput = (key, value) => {
-        setInput(preInput => {
-            return {
-                ...preInput,
-                [key]: value
-            }
-        })
-    }
+    const {data: posts, loading, fetched} = useFetchApi({url: 'https://jsonplaceholder.typicode.com/posts'});
 
     return (
         <div>
-            <input type="text" value={input.firstName} onChange={event => {
-                handleChangeInput("firstName", event.target.value)
-            }}/>
-
-            <input type="text" value={input.lastName} onChange={event => {
-                handleChangeInput("lastName", event.target.value)
-            }}/>
-
-            <button onClick={() => alert(JSON.stringify(input))}>
-                Click Me
-            </button>
+            <ul>
+                {loading ? (
+                    <div>
+                        Loading users...
+                    </div>
+                ) : (
+                    <React.Fragment>
+                        {posts.map(post => {
+                            return (
+                                <li>
+                                    {post.title}
+                                </li>
+                            )
+                        })}
+                    </React.Fragment>
+                )}
+                {fetched && (<div>
+                    Done fetching
+                </div>)}
+            </ul>
         </div>
-    );
+    )
 }
 
 export default App;
