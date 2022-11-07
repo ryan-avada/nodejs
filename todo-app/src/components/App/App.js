@@ -25,6 +25,7 @@ import {
 } from '@shopify/polaris-icons';
 import {useState, useCallback, useRef} from 'react';
 import React from "react";
+import Routes from "../Routes/Routes";
 
 function FrameExample() {
     const skipToContentRef = useRef(null);
@@ -33,9 +34,6 @@ function FrameExample() {
     const [searchActive, setSearchActive] = useState(false);
     const [searchValue, setSearchValue] = useState('');
     const [mobileNavigationActive, setMobileNavigationActive] = useState(false);
-    const [appStatus, setAppStatus] = useState(false);
-
-    const handleToggle = useCallback(() => setAppStatus((active) => !active), []);
 
 
     const handleSearchResultsDismiss = useCallback(() => {
@@ -101,17 +99,20 @@ function FrameExample() {
                 separator
                 items={[
                     {
+                        url: '/home',
                         label: 'Home',
                         icon: HomeMajor,
                         onClick: toggleIsLoading,
                     },
                     {
-                        label: 'Notification',
+                        url: '/notifications',
+                        label: 'Notifications',
                         icon: NotificationMajor,
                         onClick: toggleIsLoading,
                     },
                     {
-                        label: 'Setting',
+                        url: '/settings',
+                        label: 'Settings',
                         icon: SettingsMajor,
                         onClick: toggleIsLoading,
                     },
@@ -122,31 +123,8 @@ function FrameExample() {
 
     const loadingMarkup = isLoading ? <Loading /> : null;
 
-    const skipToContentTarget = (
-        <a id="SkipToContentTarget" ref={skipToContentRef} tabIndex={-1} />
-    );
-
-
-    const contentStatus = appStatus ? 'Deactivate' : 'Activate';
-    const textStatus = appStatus ? 'activated' : 'deactivated';
-
     const actualPageMarkup = (
-        <Page title="Home" fullWidth>
-            <Layout>
-                {skipToContentTarget}
-                <Layout.Section>
-                    <SettingToggle
-                        action={{
-                            content: contentStatus,
-                            onAction: handleToggle,
-                        }}
-                        enabled={appStatus}
-                    >
-                        App status is <TextStyle variation="strong">{textStatus}</TextStyle>.
-                    </SettingToggle>
-                </Layout.Section>
-            </Layout>
-        </Page>
+        <Routes />
     );
 
     const loadingPageMarkup = (

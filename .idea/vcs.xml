@@ -2,5 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/route-react-ex" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/training-code-sample" vcs="Git" />
   </component>
 </project>
