@@ -5,7 +5,7 @@ const fs = require("fs");
 async function getProducts(ctx) {
     try {
         const { limit, sort } = ctx.query;
-        let products = handleProductsList(getAllProducts(), sort, limit);
+        let products = getAllProducts(sort, limit);
 
         ctx.body = {
             data: products
@@ -18,24 +18,6 @@ async function getProducts(ctx) {
             error: e.message
         }
     }
-}
-
-function handleProductsList(products, sort, limit) {
-    let productsList =  products.sort(function (prev, current) {
-        if (sort === 'asc') {
-            return Date.parse(prev.createdAt) - Date.parse(current.createdAt);
-        } else if (sort === 'desc') {
-            return Date.parse(current.createdAt) - Date.parse(prev.createdAt);
-        }
-
-        return prev.id - current.id;
-    })
-
-    if (limit) {
-        productsList = productsList.slice(0, limit);
-    }
-
-    return productsList;
 }
 
 async function getProduct (ctx) {
@@ -51,12 +33,7 @@ async function getProduct (ctx) {
             }
         }
 
-        ctx.status = 404;
-        return ctx.body =  {
-            success: false,
-            data: [],
-            error: 'Product is not found!'
-        }
+        throw new Error('Product is not found!')
     } catch (e) {
         ctx.status = 404;
         ctx.body =  {
@@ -70,9 +47,7 @@ async function getProduct (ctx) {
 async function save(ctx) {
     try {
         const postData = ctx.request.body;
-        const createdAt = new Date(Date.now());
-        const data = {...postData, createdAt}
-        addAndReplace(data);
+        addAndReplace(postData);
 
         ctx.status = 201;
         ctx.body = {
@@ -100,12 +75,7 @@ async function update(ctx) {
                 data: data
             }
         }
-        ctx.status = 404;
-        return ctx.body =  {
-            success: false,
-            data: [],
-            error: 'Product is not found!'
-        }
+        throw new Error('Product is not found!')
     } catch (e) {
         ctx.status = 404;
         ctx.body = {
@@ -127,12 +97,7 @@ async function remove(ctx) {
                 }
             }
         }
-        ctx.status = 404;
-        return ctx.body =  {
-            success: false,
-            data: [],
-            error: 'Product is not found!'
-        }
+        throw new Error('Product is not found!')
     } catch (e) {
         ctx.status = 404;
         ctx.body = {

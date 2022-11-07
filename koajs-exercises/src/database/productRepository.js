@@ -1,39 +1,43 @@
 const fs = require("fs");
 
-const { data: products } = require('./products.json');
+const {data: products} = require('./products.json');
+const pick = require("../helpers/utils");
 
-function getAll() {
-    return products;
+function getAll(sort, limit) {
+    let result = products.sort(function (prev, current) {
+        if (sort === 'asc') {
+            return Date.parse(prev.createdAt) - Date.parse(current.createdAt);
+        } else if (sort === 'desc') {
+            return Date.parse(current.createdAt) - Date.parse(prev.createdAt);
+        }
+
+        return prev.id - current.id;
+    })
+
+    if (limit) {
+        result = result.slice(0, limit);
+    }
+
+    return result;
 }
 
-function getOne(id, fields = '') {
-    const product =  products.find(product => product.id === parseInt(id));
-    return filterByFields(product, fields);
-}
+function getOne(id, fields) {
+    const product = products.find(product => product.id === parseInt(id));
 
-function filterByFields(product, fields) {
     if (fields) {
-        let productWithCustomFields = [];
-        const fieldArr = fields.split(",");
-
-        [product].map(item => {
-            fieldArr.map(field => {
-                productWithCustomFields[field] = item[field];
-            })
-        })
-
-        return Object.assign({}, productWithCustomFields);
+        return pick(product, [fields]);
     }
 
     return product;
 }
-function addAndReplace(data, productId =  null) {
+
+function addAndReplace(data, productId = null) {
     //check update or create
     let updateProducts;
     if (productId) {
         const product = getOne(productId);
         Object.assign(product, data);
-        const productsExcl = products.filter(item => item.id !== parseInt(productId) );
+        const productsExcl = products.filter(item => item.id !== parseInt(productId));
 
         updateProducts = [...productsExcl, product];
     } else {
@@ -41,8 +45,7 @@ function addAndReplace(data, productId =  null) {
             (prev, current) => {
                 return prev.id > current.id ? prev : current
             }).id;
-        const newAdded = {id, ...data}
-
+        const newAdded = {id, ...data, createdAt: new Date()}
         updateProducts = [...products, newAdded];
     }
 
@@ -62,7 +65,7 @@ function remove(id) {
 
         return true;
     }
-     return false;
+    return false;
 }
 
 function fakerData(data) {
