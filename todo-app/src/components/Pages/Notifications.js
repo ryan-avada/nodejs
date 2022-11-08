@@ -7,7 +7,7 @@ import {
     Thumbnail,
     ResourceItem,
     Stack,
-    Pagination
+    Pagination, TextContainer, Icon
 } from "@shopify/polaris";
 import {useCallback, useState} from "react";
 import {TickSmallMinor} from "@shopify/polaris-icons";
@@ -105,32 +105,51 @@ function Notifications() {
                                                     accessibilityLabel={`View details for ${name}`}
                                                     name={name}
                                                 >
-                                                    <TextStyle variation={"subdued"}>Someone
-                                                        in {purchase_location}</TextStyle>
-                                                    <h3>
-                                                        <TextStyle variation="strong">Purchased {name}</TextStyle>
-                                                    </h3>
-                                                    <TextStyle variation={"subdued"}>a day ago </TextStyle>
-                                                    <TextStyle variation={"positive"}>by Avada</TextStyle>
+                                                    <p className="noti-item">
+                                                        <TextStyle variation={"subdued"}>Someone
+                                                            in {purchase_location}</TextStyle>
+                                                        <h3>
+                                                            <TextStyle variation="strong">Purchased {name}</TextStyle>
+                                                        </h3>
+                                                        <p className="noti-info">
+                                                            <TextStyle variation={"subdued"}>a day ago </TextStyle>
+                                                            <p className="noti-author">
+                                                                <Icon
+                                                                    source={TickSmallMinor}
+                                                                    color="base"
+                                                                />
+                                                                <TextStyle variation="positive">by Avada</TextStyle>
+                                                            </p>
+                                                        </p>
+                                                    </p>
                                                 </ResourceItem>
                                             </Stack.Item>
-                                            <TextStyle variation={"subdued"}>From March 8, 2021</TextStyle>
+                                            <TextContainer spacing='tight'>
+                                                <p className="noti-time">
+                                                    <TextStyle variation={"subdued"}>From March 8,</TextStyle>
+                                                </p>
+                                                <p align="right" className="noti-time">
+                                                    <TextStyle variation={"subdued"}>2021</TextStyle>
+                                                </p>
+                                            </TextContainer>
                                         </Stack>
                                     );
                                 }}
                             />
                         </Card.Section>
                     </Card>
-                    <Pagination
-                        hasPrevious
-                        onPrevious={() => {
-                            console.log('Previous');
-                        }}
-                        hasNext
-                        onNext={() => {
-                            console.log('Next');
-                        }}
-                    />
+                    <p className="noti-navigation">
+                        <Pagination
+                            hasPrevious
+                            onPrevious={() => {
+                                console.log('Previous');
+                            }}
+                            hasNext
+                            onNext={() => {
+                                console.log('Next');
+                            }}
+                        />
+                    </p>
                 </Layout.Section>
             </Layout>
         </Page>

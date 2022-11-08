@@ -7,7 +7,7 @@ import {
     Checkbox,
     Layout,
     ResourceList,
-    Thumbnail, Stack, ResourceItem, Tabs, RangeSlider, Tag
+    Thumbnail, Stack, ResourceItem, Tabs, RangeSlider, Tag, SkeletonThumbnail
 } from "@shopify/polaris";
 import {useCallback, useState} from "react";
 
@@ -25,6 +25,7 @@ function Display() {
             <TextContainer spacing='tight'>
                 <TextStyle variation="strong">APPEARANCE</TextStyle>
                 <p>Desktop Position</p>
+                <SkeletonThumbnail size="medium" />
                 <Checkbox
                     label="Hide time ago"
                     checked={hideTime}
