@@ -27,23 +27,11 @@ import {useState, useCallback, useRef} from 'react';
 import React from "react";
 import Routes from "../Routes/Routes";
 
-function FrameExample() {
+function App() {
     const skipToContentRef = useRef(null);
 
     const [isLoading, setIsLoading] = useState(false);
-    const [searchActive, setSearchActive] = useState(false);
-    const [searchValue, setSearchValue] = useState('');
     const [mobileNavigationActive, setMobileNavigationActive] = useState(false);
-
-
-    const handleSearchResultsDismiss = useCallback(() => {
-        setSearchActive(false);
-        setSearchValue('');
-    }, []);
-    const handleSearchFieldChange = useCallback((value) => {
-        setSearchValue(value);
-        setSearchActive(value.length > 0);
-    }, []);
 
     const toggleMobileNavigationActive = useCallback(
         () =>
@@ -67,28 +55,10 @@ function FrameExample() {
             onToggle=""/>
     );
 
-    const searchResultsMarkup = (
-        <ActionList
-            items={[{content: 'Avada'}, {content: 'Mageplaza'}]}
-        />
-    );
-
-    const searchFieldMarkup = (
-        <TopBar.SearchField
-            onChange={handleSearchFieldChange}
-            value={searchValue}
-            placeholder="Search"
-        />
-    );
-
     const topBarMarkup = (
         <TopBar
             showNavigationToggle
             userMenu={userMenuMarkup}
-            searchResultsVisible={searchActive}
-            searchField={searchFieldMarkup}
-            searchResults={searchResultsMarkup}
-            onSearchResultsDismiss={handleSearchResultsDismiss}
             onNavigationToggle={toggleMobileNavigationActive}
         />
     );
@@ -144,16 +114,22 @@ function FrameExample() {
 
     const pageMarkup = isLoading ? loadingPageMarkup : actualPageMarkup;
 
-    const logo = {
-        width: 200,
-        topBarSource: "https://cdn.shopify.com/s/files/1/0446/6937/files/jaded-pixel-logo-color.svg?6215648040070010999"
-    };
+    const themeConfig ={
+        logo: {
+            width: 100,
+            topBarSource: "https://cdn1.avada.io/media/site/avada_logo_final_color.svg"
+        },
+        colors: {
+            topBar: {
+                'background': '#fff'
+            }
+        },
+    }
 
     return (
         <div>
-            <AppProvider>
+            <AppProvider theme={themeConfig} i18n="">
                 <Frame
-                    logo={logo}
                     topBar={topBarMarkup}
                     navigation={navigationMarkup}
                     showMobileNavigation={mobileNavigationActive}
@@ -169,4 +145,4 @@ function FrameExample() {
 }
 
 
-export default FrameExample;
+export default App;
