@@ -2,7 +2,7 @@ import {
     ActionList,
     AppProvider, Badge, Button, ButtonGroup,
     Card,
-    ContextualSaveBar,
+    ContextualSaveBar, Form,
     FormLayout,
     Frame,
     Layout,
@@ -12,100 +12,143 @@ import {
     Page, ResourceItem, ResourceList,
     SkeletonBodyText,
     SkeletonDisplayText,
-    SkeletonPage,
+    SkeletonPage, Spinner,
     TextContainer,
     TextField,
     Toast,
     TopBar,
 } from '@shopify/polaris';
 import {useState, useCallback, useRef} from 'react';
+import {v4 as uuidv4} from "uuid";
 
-function FrameExample() {
+function TodoApp() {
+    const [isLoading, setIsLoading] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]);
     const [todos, setTodos] = useState([
         {id: 1, statusId: 1, text: "Learn about React"},
         {id: 2, statusId: 2, text: "Meet friend for lunch"},
-        {id: 3, statusId: 2, text: "Build really cool todo app"}
     ]);
-
-    const setStatus = index => {
-        const newTodos = [...todos];
-        newTodos[index].statusId = 1;
-        setTodos(newTodos);
-    }
-
-    const deleteTodo = id => {
-        const newTodos = [...todos]
-        setTodos(newTodos.filter(todo => {
-            return todo.id !== id
-        }))
-    }
-
-    const bulkDelete = e => {
-
-    }
-
-    const bulkComplete = e => {
-
-    }
-
-    const promotedBulkActions = [
-        {
-            content: 'Complete',
-            onAction: () => console.log('Todo: implement bulk add tags'),
-        },
-        {
-            content: 'Delete',
-            onAction: () => console.log('Todo: implement bulk remove tags'),
-        }
-    ];
+    const [createModel, setCreateModel] = useState(false);
+    const [todoText, setTodoText] = useState('');
 
     const statusData = [
         {id: 1, label: 'Done', className: 'success'},
         {id: 2, label: 'Pending', className: 'complete'}
     ]
 
+    const setStatus = index => {
+        setIsLoading(true);
+        const newTodos = [...todos];
+        newTodos[index].statusId = 1;
+        setTodos(newTodos);
+        setIsLoading(false);
+    }
+
+    const deleteTodo = id => {
+        setIsLoading(true);
+        const newTodos = [...todos]
+        setTodos(newTodos.filter(todo => {
+            return todo.id !== id
+        }))
+        setIsLoading(false);
+    }
+
+    const bulkDelete = () => {
+        setIsLoading(true);
+        const res = todos.filter(todo => !selectedItems.includes(todo.id))
+        setTodos(res);
+        setIsLoading(false);
+    }
+
+    const bulkComplete = () => {
+        setIsLoading(true);
+        const newTodos = todos.map(todo => {
+            if (selectedItems.includes(todo.id))
+                todo.statusId = 1;
+            return todo;
+        })
+
+        setTodos(newTodos)
+        setSelectedItems([]);
+        setIsLoading(false);
+    }
+
+    const handleCreateModel = () => {
+        setCreateModel(prev => !prev);
+    }
+
+    const addTodo = () => {
+        setIsLoading(true);
+        handleCreateModel();
+        const todo = { id: uuidv4(), statusId: 2, text: todoText};
+        const newTodosArr = [...todos, todo];
+        setTodos(newTodosArr);
+        setIsLoading(false);
+        setTodoText('');
+    }
+
+    const createButton = (
+        <Button primary onClick={handleCreateModel}>
+            Create todo
+        </Button>
+    );
+
+    const promotedBulkActions = [
+        {
+            content: 'Complete',
+            onAction: () => bulkComplete()
+        },
+        {
+            content: 'Delete',
+            onAction: () => bulkDelete(),
+        }
+    ];
+
     const pageContent = (
         <Page
             title="Todoes"
-            primaryAction={
-                <Button primary>
-                    Create todo
-                </Button>
-            }
+            primaryAction={createButton}
         >
             <Card>
-                <ResourceList
-                    resourceName={{singular: 'todo post', plural: 'todo posts'}}
-                    items={todos}
-                    selectedItems={selectedItems}
-                    onSelectionChange={setSelectedItems}
-                    selectable
-                    promotedBulkActions={promotedBulkActions}
-                    renderItem={(item, renderId, index) => {
-                        const {id, text, statusId} = item;
-                        const status = statusData.filter(stt => {
-                            return stt.id === statusId;
-                        })
+                {isLoading ? (
+                    <p style={{textAlign: "center", padding: "2%"}}>
+                        <Spinner accessibilityLabel="Spinner example" size="large"/>
+                    </p>
+                ) : (
+                    <ResourceList
+                        resourceName={{singular: 'todo post', plural: 'todo posts'}}
+                        items={todos}
+                        selectedItems={selectedItems}
+                        onSelectionChange={setSelectedItems}
+                        selectable
+                        promotedBulkActions={promotedBulkActions}
+                        renderItem={(item, renderId, index) => {
+                            const {id, text, statusId} = item;
+                            const status = statusData.filter(stt => {
+                                return stt.id === statusId;
+                            })
+                            const isDisabled = statusId === 1 ? true : false;
 
-                        return (
-                            <ResourceItem id={id}>
-                                <Layout>
-                                    <Layout.Section oneHalf>
-                                        {text}
-                                    </Layout.Section>
-                                    <Layout.Section oneThird>
+                            return (
+                                <ResourceItem id={id}>
+                                    <Layout>
+                                        <Layout.Section oneHalf>
+                                            {text}
+                                        </Layout.Section>
+                                        <Layout.Section oneThird>
                                         <span className="right-item">
                                             <Badge size="small" status={status[0].className}>{status[0].label}</Badge>
-                                            <Button onClick={() => setStatus(index)}>Complete</Button>
+                                            <Button disabled={isDisabled} onClick={() => setStatus(index)}>Complete</Button>
                                             <Button destructive onClick={() => deleteTodo(id)}>Delete</Button>
                                         </span>
-                                    </Layout.Section>
-                                </Layout>
-                            </ResourceItem>
-                        );
-                    }}
-                />
+                                        </Layout.Section>
+                                    </Layout>
+                                </ResourceItem>
+                            );
+                        }}
+                    />
+                )
+                }
             </Card>
         </Page>
     );
@@ -138,6 +181,34 @@ function FrameExample() {
         },
     };
 
+    const modelCreate = (
+        <div style={{height: '500px'}}>
+            <Modal
+                open={createModel}
+                onClose={handleCreateModel}
+                title="Create a new todo"
+                primaryAction={{
+                    content: 'Create',
+                    onAction: addTodo,
+                }}
+                secondaryActions={{
+                    content: 'Cancel',
+                    onAction: handleCreateModel,
+                }}
+            >
+                <Modal.Section>
+                    <TextField
+                        type="text"
+                        value={todoText}
+                        onChange={(e) => {
+                            setTodoText(e)
+                        }}
+                    />
+                </Modal.Section>
+            </Modal>
+        </div>
+    );
+
     return (
         <div style={{height: '500px'}}>
             <AppProvider
@@ -148,6 +219,7 @@ function FrameExample() {
                     topBar={topBarMarkup}
                 >
                     {pageContent}
+                    {modelCreate}
                 </Frame>
             </AppProvider>
         </div>
@@ -155,4 +227,4 @@ function FrameExample() {
 }
 
 
-export default FrameExample;
+export default TodoApp;
