@@ -29,7 +29,6 @@ import Routes from "../Routes/Routes";
 
 function App() {
     const skipToContentRef = useRef(null);
-
     const [isLoading, setIsLoading] = useState(false);
     const [mobileNavigationActive, setMobileNavigationActive] = useState(false);
 

@@ -126,10 +126,10 @@ function Notifications() {
                                             </Stack.Item>
                                             <TextContainer spacing='tight'>
                                                 <p className="noti-time">
-                                                    <TextStyle variation={"subdued"}>From March 8,</TextStyle>
+                                                    <TextStyle variation="subdued">From March 8,</TextStyle>
                                                 </p>
                                                 <p align="right" className="noti-time">
-                                                    <TextStyle variation={"subdued"}>2021</TextStyle>
+                                                    <TextStyle variation="subdued">2021</TextStyle>
                                                 </p>
                                             </TextContainer>
                                         </Stack>
