@@ -54,3 +54,71 @@
     text-align: center;
     padding: 1rem;
 }
+.display.desktop-position {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    position: relative;
+    text-align: center;
+}
+.display.desktop-position .position-items{
+    position: relative;
+    margin: 5px;
+    height: 40px;
+    padding: 5% 5% 5% 15%;
+    border: 2px solid lightgray;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.display.desktop-position .position-items:hover{
+    border: 2px solid dodgerblue;
+}
+
+.display.desktop-position .position-items.top-left .item{
+    position: absolute;
+    background-color: lightgray;
+    width: 90px;
+    height: 50px;
+    top: 0;
+    left: 0;
+    z-index:3;
+    margin: 5px 0 0 5px;
+}
+
+.display.desktop-position .position-items.top-right .item{
+    position: absolute;
+    background-color: lightgray;
+    width: 90px;
+    height: 50px;
+    top: 0;
+    right: 0;
+    z-index:3;
+    margin: 5px 5px 0 0;
+}
+
+.display.desktop-position .position-items.bottom-right .item{
+    position: absolute;
+    background-color: lightgray;
+    width: 90px;
+    height: 50px;
+    bottom: 0;
+    right: 0;
+    z-index:3;
+    margin: 0 5px 5px 0;
+}
+
+.display.desktop-position .position-items.bottom-left .item{
+    position: absolute;
+    background-color: lightgray;
+    width: 90px;
+    height: 50px;
+    bottom: 0;
+    left: 0;
+    z-index:3;
+    margin: 0 0 5px 5px;
+}
+
+.display.desktop-position .position-items:has(.item.active){
+    border: 2px solid dodgerblue;
+}
+

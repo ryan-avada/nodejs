@@ -20,12 +20,29 @@ function Display() {
     const [timeBeforeFirstPop, setTimeBeforeFirstPop] = useState(0);
     const [maxPops, setMaxPops] = useState(0);
 
+    const positions = [
+        {value: 'bottom-left', selected: false},
+        {value: 'bottom-right', selected: false},
+        {value: 'top-left', selected: true},
+        {value: 'top-right', selected: false},
+    ]
+
     return (
         <Page fullWidth>
             <TextContainer spacing='tight'>
                 <TextStyle variation="strong">APPEARANCE</TextStyle>
                 <p>Desktop Position</p>
-                <SkeletonThumbnail size="medium" />
+                <p className="display desktop-position">
+                { positions.map(position => {
+                    const className = 'position-items ' + position.value;
+                    const activeItem = 'item ' + (position.selected ? 'active' : '');
+                    return (
+                        <span className={className}>
+                            <span className={activeItem} />
+                        </span>
+                    )
+                }) }
+                </p>
                 <Checkbox
                     label="Hide time ago"
                     checked={hideTime}
