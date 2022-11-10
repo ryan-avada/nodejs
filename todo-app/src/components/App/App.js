@@ -25,6 +25,7 @@ function TodoApp() {
     const [isLoading, setIsLoading] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]);
     const [todos, setTodos] = useState([
+        // todo: Chỗ này lưu luôn status vào đây là đc ạ
         {id: 1, statusId: 1, text: "Learn about React"},
         {id: 2, statusId: 2, text: "Meet friend for lunch"},
     ]);
@@ -41,6 +42,14 @@ function TodoApp() {
         const newTodos = [...todos];
         newTodos[index].statusId = 1;
         setTodos(newTodos);
+        // todo: Mình sẽ dùng là setState dạng func như thế này ạ
+        // setTodos(prevTodos => {
+        //     // prevTodos ở đây sẽ luôn là todos state ở lúc mới nhất, realtime nhất. Phải luôn dùng cái cú pháp này ạ.
+        //     return prevTodos.map((todo, todoIndex) => {
+        //         if (todoIndex === index) return {...todo, statusId: 1}
+        //         return todo
+        //     })
+        // })
         setIsLoading(false);
     }
 
@@ -55,6 +64,7 @@ function TodoApp() {
 
     const bulkDelete = () => {
         setIsLoading(true);
+        // todo: cái này cũng chuyển qua cú pháp setState(prev => prev) ạ
         const res = todos.filter(todo => !selectedItems.includes(todo.id))
         setTodos(res);
         setIsLoading(false);
@@ -62,6 +72,7 @@ function TodoApp() {
 
     const bulkComplete = () => {
         setIsLoading(true);
+        // todo: cái này cũng chuyển qua cú pháp setState(prev => prev) ạ
         const newTodos = todos.map(todo => {
             if (selectedItems.includes(todo.id))
                 todo.statusId = 1;
@@ -80,7 +91,8 @@ function TodoApp() {
     const addTodo = () => {
         setIsLoading(true);
         handleCreateModel();
-        const todo = { id: uuidv4(), statusId: 2, text: todoText};
+        // cái việc unique ra ID phải ở backend, nên tạm thời ko cần ạ. chỉ cần tí lắp backend vào là đc ạ
+        const todo = {id: uuidv4(), statusId: 2, text: todoText};
         const newTodosArr = [...todos, todo];
         setTodos(newTodosArr);
         setIsLoading(false);
