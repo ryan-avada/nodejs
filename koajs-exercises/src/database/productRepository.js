@@ -69,7 +69,7 @@ function remove(id) {
 }
 
 function fakerData(data) {
-    const updateProducts = [...data, ...products];
+    const updateProducts = [...data];
     return fs.writeFileSync('./src/database/products.json', JSON.stringify({
         data: updateProducts
     }))

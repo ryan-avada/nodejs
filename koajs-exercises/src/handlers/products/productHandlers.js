@@ -110,7 +110,7 @@ async function remove(ctx) {
 async function fakerProducts(ctx) {
     try {
         const products = [];
-        Array.from({length: 1000}).forEach((value, index, array) => {
+        Array.from({length: 50}).forEach((value, index, array) => {
             const productsData = createRandomProducts(index + 1);
             products.push(productsData);
         })
@@ -137,6 +137,7 @@ function createRandomProducts(id) {
         "price": faker.commerce.price(),
         "description": faker.commerce.productDescription(),
         "product": faker.commerce.product(),
+        "status": faker.datatype.number({min: 1, max: 2}),
         "color": faker.commerce.color(),
         "createdAt": faker.date.past(),
         "image": faker.image.cats()

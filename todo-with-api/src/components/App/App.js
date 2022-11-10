@@ -14,95 +14,60 @@ import {
     SkeletonDisplayText,
     SkeletonPage, Spinner,
     TextContainer,
-    TextField,
+    TextField, Thumbnail,
     Toast,
     TopBar,
 } from '@shopify/polaris';
-import {useState, useCallback, useRef} from 'react';
-import {v4 as uuidv4} from "uuid";
+import {useState, useCallback, useRef, useEffect} from 'react';
+import useFetchApi from "../hooks/useFetchApi";
 
 function TodoApp() {
     const [isLoading, setIsLoading] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]);
-    const [todos, setTodos] = useState([
-        // todo: Chỗ này lưu luôn status vào đây là đc ạ
-        {id: 1, statusId: 1, text: "Learn about React"},
-        {id: 2, statusId: 2, text: "Meet friend for lunch"},
-    ]);
     const [createModel, setCreateModel] = useState(false);
     const [todoText, setTodoText] = useState('');
+    const [productData, setProductData] = useState([]);
+
+    const {data: products, loading} = useFetchApi({url: 'http://localhost:5000/api/products'});
 
     const statusData = [
-        {id: 1, label: 'Done', className: 'success'},
-        {id: 2, label: 'Pending', className: 'complete'}
+        {id: 1, label: 'Active', className: 'success'},
+        {id: 2, label: 'InActive', className: 'complete'}
     ]
-
-    const setStatus = index => {
-        setIsLoading(true);
-        setTodos(prevTodos => {
-            return prevTodos.map((todo, todoIndex) => {
-                if (todoIndex === index) return {...todo, statusId: 1};
-                return todo
-            })
-        })
-        // todo: Mình sẽ dùng là setState dạng func như thế này ạ
-        // setTodos(prevTodos => {
-        //     // prevTodos ở đây sẽ luôn là todos state ở lúc mới nhất, realtime nhất. Phải luôn dùng cái cú pháp này ạ.
-        //     return prevTodos.map((todo, todoIndex) => {
-        //         if (todoIndex === index) return {...todo, statusId: 1}
-        //         return todo
-        //     })
-        // })
-        setIsLoading(false);
-    }
-
-    const deleteTodo = id => {
-        setIsLoading(true);
-        setTodos(prevTodos => {
-            return prevTodos.filter(todo => {
-                return todo.id !== id
-            })
-        })
-        setIsLoading(false);
-    }
-
-    const bulkDelete = () => {
-        setIsLoading(true);
-        // todo: cái này cũng chuyển qua cú pháp setState(prev => prev) ạ
-        setTodos(prevTodos => {
-            return prevTodos.filter(todo => {
-                return !selectedItems.includes(todo.id);
-            })
-        })
-        setIsLoading(false);
-    }
-
-    const bulkComplete = () => {
-        setIsLoading(true);
-        // todo: cái này cũng chuyển qua cú pháp setState(prev => prev) ạ
-        setTodos(prevTodos => {
-            return prevTodos.map(todo => {
-                return selectedItems.includes(todo.id) ? {...todo, statusId: 1} : todo;
-            })
-        })
-        setSelectedItems([]);
-        setIsLoading(false);
-    }
 
     const handleCreateModel = () => {
         setCreateModel(prev => !prev);
     }
 
-    const addTodo = () => {
-        setIsLoading(true);
-        handleCreateModel();
-        // cái việc unique ra ID phải ở backend, nên tạm thời ko cần ạ. chỉ cần tí lắp backend vào là đc ạ
-        const todo = {id: uuidv4(), statusId: 2, text: todoText};
-        setTodos(prevTodos => {
-            return [...todos, todo];
-        })
-        setIsLoading(false);
-        setTodoText('');
+    const promotedBulkActions = [
+        {
+            content: 'Active',
+            onAction: ""
+        },
+        {
+            content: 'Delete',
+            onAction: "",
+        }
+    ];
+
+    async function ActiveOne(id) {
+        try {
+            setIsLoading(true)
+            await fetch('http://localhost:5000/api/products/' + id, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    status: 1
+                }),
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                }
+            })
+            setIsLoading(false)
+        } catch (e) {
+            console.log(e)
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     const createButton = (
@@ -111,53 +76,60 @@ function TodoApp() {
         </Button>
     );
 
-    const promotedBulkActions = [
-        {
-            content: 'Complete',
-            onAction: () => bulkComplete()
-        },
-        {
-            content: 'Delete',
-            onAction: () => bulkDelete(),
-        }
-    ];
-
     const pageContent = (
         <Page
-            title="Todoes"
+            title="Products"
             primaryAction={createButton}
         >
             <Card>
-                {isLoading ? (
+                {(loading || isLoading) ? (
                     <p style={{textAlign: "center", padding: "2%"}}>
                         <Spinner accessibilityLabel="Spinner example" size="large"/>
                     </p>
                 ) : (
                     <ResourceList
-                        resourceName={{singular: 'todo post', plural: 'todo posts'}}
-                        items={todos}
+                        resourceName={{singular: 'product', plural: 'products'}}
+                        items={products}
                         selectedItems={selectedItems}
                         onSelectionChange={setSelectedItems}
                         selectable
                         promotedBulkActions={promotedBulkActions}
                         renderItem={(item, renderId, index) => {
-                            const {id, text, statusId} = item;
-                            const status = statusData.filter(stt => {
-                                return stt.id === statusId;
-                            })
-                            const isDisabled = statusId === 1 ? true : false;
-
+                            const {id, name, price, status: sttId, description, product, color, image, createAt} = item;
+                            const statusRes = statusData.filter(status => {
+                                return status.id === sttId;
+                            });
                             return (
-                                <ResourceItem id={id}>
+                                <ResourceItem
+                                    id={id}
+                                    media={(
+                                        <Thumbnail
+                                            source={image}
+                                            alt={name}
+                                        />
+                                    )}
+                                >
                                     <Layout>
                                         <Layout.Section oneHalf>
-                                            {text}
+                                            <h1 style={{'font-weight': 'bold',"margin-bottom":"1%"}}>{name}</h1>
+                                            <div>
+                                                <span style={{'font-weight': 'bold'}}>Price: </span>
+                                                {price}
+                                            </div>
+                                            <div>
+                                                <span style={{'font-weight': 'bold'}}>Color: </span>
+                                                {product}
+                                            </div>
+                                            <div>
+                                                <span style={{'font-weight': 'bold'}}>Description: </span>
+                                                {description}
+                                            </div>
                                         </Layout.Section>
                                         <Layout.Section oneThird>
                                         <span className="right-item">
-                                            <Badge size="small" status={status[0].className}>{status[0].label}</Badge>
-                                            <Button disabled={isDisabled} onClick={() => setStatus(index)}>Complete</Button>
-                                            <Button destructive onClick={() => deleteTodo(id)}>Delete</Button>
+                                            <Badge status={statusRes[0].className}>{statusRes[0].label}</Badge>
+                                            <Button onClick={() => ActiveOne(id)}>Active</Button>
+                                            <Button destructive onClick={() => alert('231312')}>Delete</Button>
                                         </span>
                                         </Layout.Section>
                                     </Layout>
@@ -207,7 +179,6 @@ function TodoApp() {
                 title="Create a new todo"
                 primaryAction={{
                     content: 'Create',
-                    onAction: addTodo,
                 }}
                 secondaryActions={{
                     content: 'Cancel',
