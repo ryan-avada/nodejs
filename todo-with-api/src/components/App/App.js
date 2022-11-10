@@ -26,7 +26,6 @@ function TodoApp() {
     const [selectedItems, setSelectedItems] = useState([]);
     const [createModel, setCreateModel] = useState(false);
     const [todoText, setTodoText] = useState('');
-    const [productData, setProductData] = useState([]);
 
     const {data: products, loading} = useFetchApi({url: 'http://localhost:5000/api/products'});
 
