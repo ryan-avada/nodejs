@@ -1,3 +1,4 @@
+import React from "react";
 import {
     ActionList,
     AppProvider, Badge, Button, ButtonGroup,
@@ -27,12 +28,7 @@ function TodoApp() {
     const [createModel, setCreateModel] = useState(false);
     const [todoText, setTodoText] = useState('');
 
-    const {data: products, loading} = useFetchApi({url: 'http://localhost:5000/api/products'});
-
-    const statusData = [
-        {id: 1, label: 'Active', className: 'success'},
-        {id: 2, label: 'InActive', className: 'complete'}
-    ]
+    const {data: todos, loading} = useFetchApi({url: 'http://localhost:5000/api/todos'});
 
     const handleCreateModel = () => {
         setCreateModel(prev => !prev);
@@ -40,22 +36,37 @@ function TodoApp() {
 
     const promotedBulkActions = [
         {
-            content: 'Active',
-            onAction: ""
+            content: 'Complete',
+            onAction: () => bulkComplete(),
         },
         {
             content: 'Delete',
-            onAction: "",
+            onAction: () => bulkDelete(),
         }
     ];
 
-    async function ActiveOne(id) {
+    const bulkComplete = () => {
+        selectedItems.map(id => {
+            return activeOne(id)
+        })
+        setSelectedItems([]);
+    }
+
+    const bulkDelete = () => {
+        deleteOne(selectedItems.toString());
+    }
+
+    async function activeOne(id) {
         try {
             setIsLoading(true)
-            await fetch('http://localhost:5000/api/products/' + id, {
+            await fetch('http://localhost:5000/api/todo/' + id, {
                 method: 'PUT',
                 body: JSON.stringify({
-                    status: 1
+                    status: {
+                        id: 1,
+                        label: "Done",
+                        className: "success"
+                    }
                 }),
                 headers: {
                     'Content-type': 'application/json; charset=UTF-8',
@@ -69,6 +80,47 @@ function TodoApp() {
         }
     }
 
+    async function deleteOne(id) {
+        try {
+            setIsLoading(true)
+            await fetch('http://localhost:5000/api/todo/' + id, {
+                method: 'DELETE'
+            })
+            setIsLoading(false)
+        } catch (e) {
+            console.log(e)
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    async function createTodo() {
+        try {
+            setIsLoading(true)
+            await fetch('http://localhost:5000/api/todo', {
+                method: 'POST',
+                body: JSON.stringify({
+                    "value": todoText,
+                    "status": {
+                        "id": 2,
+                        "label": "Pending",
+                        "className": "complete"
+
+                    }
+                }),
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                },
+            })
+            setTodoText("");
+            handleCreateModel();
+            setIsLoading(false)
+        } catch (e) {
+            console.log(e)
+            setIsLoading(false)
+        }
+    }
+
     const createButton = (
         <Button primary onClick={handleCreateModel}>
             Create todo
@@ -77,67 +129,38 @@ function TodoApp() {
 
     const pageContent = (
         <Page
-            title="Products"
+            title="Todos"
             primaryAction={createButton}
         >
             <Card>
-                {(loading || isLoading) ? (
-                    <p style={{textAlign: "center", padding: "2%"}}>
-                        <Spinner accessibilityLabel="Spinner example" size="large"/>
-                    </p>
-                ) : (
-                    <ResourceList
-                        resourceName={{singular: 'product', plural: 'products'}}
-                        items={products}
-                        selectedItems={selectedItems}
-                        onSelectionChange={setSelectedItems}
-                        selectable
-                        promotedBulkActions={promotedBulkActions}
-                        renderItem={(item, renderId, index) => {
-                            const {id, name, price, status: sttId, description, product, color, image, createAt} = item;
-                            const statusRes = statusData.filter(status => {
-                                return status.id === sttId;
-                            });
-                            return (
-                                <ResourceItem
-                                    id={id}
-                                    media={(
-                                        <Thumbnail
-                                            source={image}
-                                            alt={name}
-                                        />
-                                    )}
-                                >
-                                    <Layout>
-                                        <Layout.Section oneHalf>
-                                            <h1 style={{'font-weight': 'bold',"margin-bottom":"1%"}}>{name}</h1>
-                                            <div>
-                                                <span style={{'font-weight': 'bold'}}>Price: </span>
-                                                {price}
-                                            </div>
-                                            <div>
-                                                <span style={{'font-weight': 'bold'}}>Color: </span>
-                                                {product}
-                                            </div>
-                                            <div>
-                                                <span style={{'font-weight': 'bold'}}>Description: </span>
-                                                {description}
-                                            </div>
-                                        </Layout.Section>
-                                        <Layout.Section oneThird>
+                <ResourceList
+                    loading={loading || isLoading}
+                    resourceName={{singular: 'todo', plural: 'todos'}}
+                    items={todos}
+                    selectedItems={selectedItems}
+                    onSelectionChange={setSelectedItems}
+                    selectable
+                    promotedBulkActions={promotedBulkActions}
+                    renderItem={(item) => {
+                        const {id, value, status} = item;
+                        return (
+                            <ResourceItem id={id}>
+                                <Layout>
+                                    <Layout.Section oneHalf>
+                                        {value}
+                                    </Layout.Section>
+                                    <Layout.Section oneThird>
                                         <span className="right-item">
-                                            <Badge status={statusRes[0].className}>{statusRes[0].label}</Badge>
-                                            <Button onClick={() => ActiveOne(id)}>Active</Button>
-                                            <Button destructive onClick={() => alert('231312')}>Delete</Button>
+                                            <Badge size="small" status={status.className}>{status.label}</Badge>
+                                            <Button onClick={() => activeOne(id)}>Complete</Button>
+                                            <Button destructive onClick={() => deleteOne(id)}>Delete</Button>
                                         </span>
-                                        </Layout.Section>
-                                    </Layout>
-                                </ResourceItem>
-                            );
-                        }}
-                    />
-                )
-                }
+                                    </Layout.Section>
+                                </Layout>
+                            </ResourceItem>
+                        );
+                    }}
+                />
             </Card>
         </Page>
     );
@@ -178,6 +201,7 @@ function TodoApp() {
                 title="Create a new todo"
                 primaryAction={{
                     content: 'Create',
+                    onAction: () => createTodo()
                 }}
                 secondaryActions={{
                     content: 'Cancel',
