@@ -27,9 +27,9 @@ function TodoApp() {
     const [selectedItems, setSelectedItems] = useState([]);
     const [createModel, setCreateModel] = useState(false);
     const [todoText, setTodoText] = useState('');
+    const [dataReceived, setDataReceived] = useState([]);
 
     const {data: todos, loading} = useFetchApi({url: 'http://localhost:5000/api/todos'});
-
     const handleCreateModel = () => {
         setCreateModel(prev => !prev);
     }
@@ -53,7 +53,7 @@ function TodoApp() {
     }
 
     const bulkDelete = () => {
-        deleteOne(selectedItems.toString());
+        deleteTodo(selectedItems.toString());
     }
 
     async function activeOne(id) {
@@ -80,7 +80,7 @@ function TodoApp() {
         }
     }
 
-    async function deleteOne(id) {
+    async function deleteTodo(id) {
         try {
             setIsLoading(true)
             await fetch('http://localhost:5000/api/todo/' + id, {
@@ -153,7 +153,7 @@ function TodoApp() {
                                         <span className="right-item">
                                             <Badge size="small" status={status.className}>{status.label}</Badge>
                                             <Button onClick={() => activeOne(id)}>Complete</Button>
-                                            <Button destructive onClick={() => deleteOne(id)}>Delete</Button>
+                                            <Button destructive onClick={() => deleteTodo(id)}>Delete</Button>
                                         </span>
                                     </Layout.Section>
                                 </Layout>

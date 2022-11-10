@@ -2,6 +2,7 @@ const fs = require("fs");
 
 const {data: todos} = require('./todo.json');
 const {faker} = require("@faker-js/faker");
+const {stringify} = require("nodemon/lib/utils");
 
 function getAll() {
     return todos;
@@ -33,7 +34,7 @@ function addAndReplace(data, todoId = null) {
 
 function remove(id) {
     const ids = id.split(",");
-    const todosExcl = todos.filter(item => !ids.includes(item.id));
+    const todosExcl = todos.filter(item => !ids.includes(String(item.id)));
     fs.writeFileSync('./src/database/todo.json', JSON.stringify({
         data: todosExcl
     }))
