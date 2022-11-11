@@ -1,62 +1,70 @@
 import React from "react";
 import {
-    ActionList,
-    AppProvider, Badge, Button, ButtonGroup,
+    AppProvider,
+    Button,
     Card,
-    ContextualSaveBar, Form,
-    FormLayout,
     Frame,
-    Layout,
-    Loading,
     Modal,
-    Navigation,
-    Page, ResourceItem, ResourceList,
-    SkeletonBodyText,
-    SkeletonDisplayText,
-    SkeletonPage, Spinner,
-    TextContainer,
-    TextField, Thumbnail,
-    Toast,
+    Page,
+    TextField,
     TopBar,
 } from '@shopify/polaris';
-import {useState, useCallback, useRef, useEffect} from 'react';
+import {useState} from 'react';
 import useFetchApi from "../hooks/useFetchApi";
+import TodoList from "../TodoList/TodoList";
+import ShowToast from "../TodoList/ShowToast";
 
 function TodoApp() {
-    const [selectedItems, setSelectedItems] = useState([]);
-    const [createModel, setCreateModel] = useState(false);
     const [todoText, setTodoText] = useState('');
+    const [createModal, setCreateModal] = useState(false);
+    const [activeToast, setActiveToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState("");
 
-    const {data: todos, loading, setLoading} = useFetchApi({url: 'http://localhost:5000/api/todos'});
-    const handleCreateModel = () => {
-        setCreateModel(prev => !prev);
+    const toggleToast = (content) => {
+        setActiveToast(prev => !prev)
+        setToastMessage(() => content ? content : "");
     }
 
-    const promotedBulkActions = [
-        {
-            content: 'Complete',
-            onAction: () => bulkComplete(),
-        },
-        {
-            content: 'Delete',
-            onAction: () => bulkDelete(),
+    const handleCreateModal = () => {
+        setCreateModal(prev => !prev);
+    }
+
+    const {
+        data: todos,
+        loading,
+        setLoading,
+        fetchData
+    } = useFetchApi({url: 'http://localhost:5000/api/todos'});
+
+    const bulkComplete = async (selectedItems) => {
+        try {
+            setLoading(true)
+            await Promise.all(selectedItems.map(id => {
+                // todo: use bulk API
+                return activateTodo(id, true)
+            }))
+            toggleToast("Update success!");
+        } catch (e) {
+            toggleToast(e)
+        } finally {
+            await fetchData('http://localhost:5000/api/todos')
+            setLoading(false)
         }
-    ];
-
-    const bulkComplete = () => {
-        setLoading(true)
-        selectedItems.map(id => {
-            return activeOne(id)
-        })
-        setSelectedItems([]);
-        setLoading(false)
     }
 
-    const bulkDelete = () => {
-        deleteTodo(selectedItems.toString());
+    const bulkDelete = async (selectedItems) => {
+        try {
+            await deleteTodo(selectedItems.toString(), true);
+            toggleToast("Delete success!");
+        } catch (e) {
+            // todo: toast here, and loading
+            toggleToast(e);
+        } finally {
+            await fetchData('http://localhost:5000/api/todos')
+        }
     }
 
-    async function activeOne(id) {
+    async function activateTodo(id, bulk = false) {
         try {
             setLoading(true)
             await fetch('http://localhost:5000/api/todo/' + id, {
@@ -72,24 +80,32 @@ function TodoApp() {
                     'Content-type': 'application/json; charset=UTF-8',
                 }
             })
-            setLoading(false)
+            if (!bulk) {
+                toggleToast("Update success!");
+            }
         } catch (e) {
-            console.log(e)
+            toggleToast(e);
         } finally {
+            await fetchData('http://localhost:5000/api/todos')
             setLoading(false)
         }
     }
 
-    async function deleteTodo(id) {
+    async function deleteTodo(id, bulk = false) {
         try {
             setLoading(true)
             await fetch('http://localhost:5000/api/todo/' + id, {
                 method: 'DELETE'
             })
-            setLoading(false)
+            // todo: Them toast
+            if (!bulk) {
+                toggleToast("Delete success!");
+            }
+
         } catch (e) {
-            console.log(e)
+            toggleToast(e);
         } finally {
+            await fetchData('http://localhost:5000/api/todos')
             setLoading(false)
         }
     }
@@ -105,7 +121,6 @@ function TodoApp() {
                         "id": 2,
                         "label": "Pending",
                         "className": "complete"
-
                     }
                 }),
                 headers: {
@@ -113,16 +128,18 @@ function TodoApp() {
                 },
             })
             setTodoText("");
-            handleCreateModel();
-            setLoading(false)
+            handleCreateModal();
+            toggleToast("Create success!");
         } catch (e) {
-            console.log(e)
+            toggleToast(e);
+        } finally {
+            await fetchData('http://localhost:5000/api/todos')
             setLoading(false)
         }
     }
 
     const createButton = (
-        <Button primary onClick={handleCreateModel}>
+        <Button primary onClick={handleCreateModal}>
             Create todo
         </Button>
     );
@@ -133,34 +150,8 @@ function TodoApp() {
             primaryAction={createButton}
         >
             <Card>
-                <ResourceList
-                    loading={loading}
-                    resourceName={{singular: 'todo', plural: 'todos'}}
-                    items={todos}
-                    selectedItems={selectedItems}
-                    onSelectionChange={setSelectedItems}
-                    selectable
-                    promotedBulkActions={promotedBulkActions}
-                    renderItem={(item) => {
-                        const {id, value, status} = item;
-                        return (
-                            <ResourceItem id={id}>
-                                <Layout>
-                                    <Layout.Section oneHalf>
-                                        {value}
-                                    </Layout.Section>
-                                    <Layout.Section oneThird>
-                                        <span className="right-item">
-                                            <Badge size="small" status={status.className}>{status.label}</Badge>
-                                            <Button onClick={() => activeOne(id)}>Complete</Button>
-                                            <Button destructive onClick={() => deleteTodo(id)}>Delete</Button>
-                                        </span>
-                                    </Layout.Section>
-                                </Layout>
-                            </ResourceItem>
-                        );
-                    }}
-                />
+                <TodoList bulkComplete={bulkComplete} bulkDelete={bulkDelete} activateTodo={activateTodo}
+                          deleteTodo={deleteTodo} todos={todos} loading={loading}/>
             </Card>
         </Page>
     );
@@ -169,6 +160,7 @@ function TodoApp() {
         <TopBar.UserMenu
             name="Avada"
             initials="A"
+            onToggle={handleCreateModal}
         />
     );
 
@@ -196,8 +188,8 @@ function TodoApp() {
     const modelCreate = (
         <div style={{height: '500px'}}>
             <Modal
-                open={createModel}
-                onClose={handleCreateModel}
+                open={createModal}
+                onClose={handleCreateModal}
                 title="Create a new todo"
                 primaryAction={{
                     content: 'Create',
@@ -205,7 +197,7 @@ function TodoApp() {
                 }}
                 secondaryActions={{
                     content: 'Cancel',
-                    onAction: handleCreateModel,
+                    onAction: handleCreateModal,
                 }}
             >
                 <Modal.Section>
@@ -232,6 +224,7 @@ function TodoApp() {
                 >
                     {pageContent}
                     {modelCreate}
+                    {activeToast ? (<ShowToast message={toastMessage} handleToast={toggleToast}/>) : null}
                 </Frame>
             </AppProvider>
         </div>

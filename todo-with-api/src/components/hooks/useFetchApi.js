@@ -3,15 +3,25 @@ import {useEffect, useState} from "react";
 function useFetchApi ({url}) {
     const [loading, setLoading]         = useState(false);
     const [data, setData]               = useState([]);
-    async function fetchData() {
+    const [fetched, setFetched]         = useState(false);
+
+    const handleChangeInput = (key, value) => setData(prev => ({
+        ...prev,
+        [key]: value
+    }))
+
+    /**
+     *
+     * @returns {Promise<void>}
+     */
+    async function fetchData(url) {
         try {
             setLoading(true);
             const resp = await fetch(url);
-
-            const respData = await resp.json();
-
-            setData(respData['data']);
-            setLoading(false)
+            const {data: respData} = await resp.json();
+            if (respData) {
+                setData(respData);
+            }
         } catch (e) {
             console.error(e)
         } finally {
@@ -20,13 +30,20 @@ function useFetchApi ({url}) {
     }
 
     useEffect(() => {
-        fetchData()
-    }, [])
+        if (!fetched) {
+            fetchData(url).then(() => {
+                setFetched(true)
+            })
+        }
+    }, [fetched])
 
     return {
         data,
         loading,
-        setLoading
+        setLoading,
+        fetched,
+        handleChangeInput,
+        fetchData
     }
 }
 export default useFetchApi;
