@@ -23,13 +23,11 @@ import {useState, useCallback, useRef, useEffect} from 'react';
 import useFetchApi from "../hooks/useFetchApi";
 
 function TodoApp() {
-    const [isLoading, setIsLoading] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]);
     const [createModel, setCreateModel] = useState(false);
     const [todoText, setTodoText] = useState('');
-    const [dataReceived, setDataReceived] = useState([]);
 
-    const {data: todos, loading} = useFetchApi({url: 'http://localhost:5000/api/todos'});
+    const {data: todos, loading, setLoading} = useFetchApi({url: 'http://localhost:5000/api/todos'});
     const handleCreateModel = () => {
         setCreateModel(prev => !prev);
     }
@@ -46,10 +44,12 @@ function TodoApp() {
     ];
 
     const bulkComplete = () => {
+        setLoading(true)
         selectedItems.map(id => {
             return activeOne(id)
         })
         setSelectedItems([]);
+        setLoading(false)
     }
 
     const bulkDelete = () => {
@@ -58,7 +58,7 @@ function TodoApp() {
 
     async function activeOne(id) {
         try {
-            setIsLoading(true)
+            setLoading(true)
             await fetch('http://localhost:5000/api/todo/' + id, {
                 method: 'PUT',
                 body: JSON.stringify({
@@ -72,31 +72,31 @@ function TodoApp() {
                     'Content-type': 'application/json; charset=UTF-8',
                 }
             })
-            setIsLoading(false)
+            setLoading(false)
         } catch (e) {
             console.log(e)
         } finally {
-            setIsLoading(false)
+            setLoading(false)
         }
     }
 
     async function deleteTodo(id) {
         try {
-            setIsLoading(true)
+            setLoading(true)
             await fetch('http://localhost:5000/api/todo/' + id, {
                 method: 'DELETE'
             })
-            setIsLoading(false)
+            setLoading(false)
         } catch (e) {
             console.log(e)
         } finally {
-            setIsLoading(false)
+            setLoading(false)
         }
     }
 
     async function createTodo() {
         try {
-            setIsLoading(true)
+            setLoading(true)
             await fetch('http://localhost:5000/api/todo', {
                 method: 'POST',
                 body: JSON.stringify({
@@ -114,10 +114,10 @@ function TodoApp() {
             })
             setTodoText("");
             handleCreateModel();
-            setIsLoading(false)
+            setLoading(false)
         } catch (e) {
             console.log(e)
-            setIsLoading(false)
+            setLoading(false)
         }
     }
 
@@ -134,7 +134,7 @@ function TodoApp() {
         >
             <Card>
                 <ResourceList
-                    loading={loading || isLoading}
+                    loading={loading}
                     resourceName={{singular: 'todo', plural: 'todos'}}
                     items={todos}
                     selectedItems={selectedItems}

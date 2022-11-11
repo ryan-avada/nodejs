@@ -25,7 +25,9 @@ function useFetchApi ({url}) {
 
     return {
         data,
-        loading
+        setData,
+        loading,
+        setLoading
     }
 }
 export default useFetchApi;
