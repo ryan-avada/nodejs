@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {Badge, Button, Layout, ResourceItem, ResourceList} from "@shopify/polaris";
+import TodoItem from "../TodoItem/TodoItem";
 
 const TodoList = ({todos, loading, bulkComplete = null, bulkDelete = null, activateTodo = null, deleteTodo = null}) => {
     const [selectedItems, setSelectedItems] = useState([]);
@@ -38,22 +39,9 @@ const TodoList = ({todos, loading, bulkComplete = null, bulkDelete = null, activ
             selectable
             promotedBulkActions={promotedBulkActions}
             renderItem={(item) => {
-                const {id, value, status} = item
+
                 return (
-                    <ResourceItem id={id}>
-                        <Layout>
-                            <Layout.Section oneHalf>
-                                {value}
-                            </Layout.Section>
-                            <Layout.Section oneThird>
-                                        <span className="right-item">
-                                            <Badge size="small" status={status.className}>{status.label}</Badge>
-                                            <Button onClick={() => activateTodo(id)}>Complete</Button>
-                                            <Button destructive onClick={() => deleteTodo(id)}>Delete</Button>
-                                        </span>
-                            </Layout.Section>
-                        </Layout>
-                    </ResourceItem>
+                    <TodoItem item={item} activateTodo={activateTodo} deleteTodo={deleteTodo} />
                 )
             }}
         />

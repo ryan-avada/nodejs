@@ -10,9 +10,9 @@ import {
     TopBar,
 } from '@shopify/polaris';
 import {useState} from 'react';
-import useFetchApi from "../hooks/useFetchApi";
-import TodoList from "../TodoList/TodoList";
-import ShowToast from "../TodoList/ShowToast";
+import useFetchApi from "../../hooks/useFetchApi";
+import TodoList from "../Todo/TodoList/TodoList";
+import ShowToast from "../Todo/TodoList/ShowToast";
 
 function TodoApp() {
     const [todoText, setTodoText] = useState('');
