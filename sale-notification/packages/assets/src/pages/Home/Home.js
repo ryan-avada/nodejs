@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {CalloutCard, FooterHelp, Layout, Link, Page} from '@shopify/polaris';
+import React, {useCallback, useEffect, useState} from 'react';
+import {CalloutCard, FooterHelp, Layout, Link, Page, SettingToggle, TextStyle} from '@shopify/polaris';
 import api from '../../helpers';
 
 /**
@@ -9,66 +9,30 @@ import api from '../../helpers';
  * @constructor
  */
 export default function Home() {
+  const [active, setActive] = useState(false);
+
+  const handleToggle = useCallback(() => setActive((active) => !active), []);
+
+  const contentStatus = active ? 'Deactivate' : 'Activate';
+  const textStatus = active ? 'activated' : 'deactivated';
   return (
     <Page
-      title="Dashboard"
-      primaryAction={{
-        content: 'Samples',
-        url: '/samples'
-      }}
+      title="Home"
+      fullWidth
     >
       <Layout>
         <Layout.Section>
-          <CalloutCard
-            title="Customize the style of your checkout"
-            illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10aac7bd9c7ad02030f48cfa0.svg"
-            primaryAction={{
-              content: 'Customize checkout',
-              url: 'https://www.shopify.com'
+          <SettingToggle
+            action={{
+              content: contentStatus,
+              onAction: handleToggle,
             }}
+            enabled={active}
           >
-            <p>Upload your store’s logo, change colors and fonts, and more.</p>
-          </CalloutCard>
-          <CalloutCard
-            title="Customize the style of your checkout"
-            illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10aac7bd9c7ad02030f48cfa0.svg"
-            primaryAction={{
-              content: 'Customize checkout',
-              url: 'https://www.shopify.com'
-            }}
-          >
-            <p>Upload your store’s logo, change colors and fonts, and more.</p>
-          </CalloutCard>
-          <CalloutCard
-            title="Customize the style of your checkout"
-            illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10aac7bd9c7ad02030f48cfa0.svg"
-            primaryAction={{
-              content: 'Customize checkout',
-              url: 'https://www.shopify.com'
-            }}
-          >
-            <p>Upload your store’s logo, change colors and fonts, and more.</p>
-          </CalloutCard>
-          <CalloutCard
-            title="Customize the style of your checkout"
-            illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10aac7bd9c7ad02030f48cfa0.svg"
-            primaryAction={{
-              content: 'Customize checkout',
-              url: 'https://www.shopify.com'
-            }}
-          >
-            <p>Upload your store’s logo, change colors and fonts, and more.</p>
-          </CalloutCard>
-          <CalloutCard
-            title="Customize the style of your checkout"
-            illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10aac7bd9c7ad02030f48cfa0.svg"
-            primaryAction={{
-              content: 'Customize checkout',
-              url: 'https://www.shopify.com'
-            }}
-          >
-            <p>Upload your store’s logo, change colors and fonts, and more.</p>
-          </CalloutCard>
+            This setting is{' '}
+            <TextStyle variation="strong">{textStatus}</TextStyle>
+            .
+          </SettingToggle>
         </Layout.Section>
         <Layout.Section>
           <FooterHelp>
