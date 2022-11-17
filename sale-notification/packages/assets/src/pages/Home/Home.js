@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {CalloutCard, FooterHelp, Layout, Link, Page, SettingToggle, TextStyle} from '@shopify/polaris';
 import api from '../../helpers';
+import Footer from "../Footer/Footer";
 
 /**
  * Render a home page for overview
@@ -34,14 +35,7 @@ export default function Home() {
             .
           </SettingToggle>
         </Layout.Section>
-        <Layout.Section>
-          <FooterHelp>
-            Learn more about{' '}
-            <Link url="https://help.shopify.com/manual/orders/fulfill-orders">
-              fulfilling orders
-            </Link>
-          </FooterHelp>
-        </Layout.Section>
+        <Footer />
       </Layout>
     </Page>
   );
