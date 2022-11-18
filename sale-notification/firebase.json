@@ -29,6 +29,10 @@
     ],
     "rewrites": [
       {
+        "source": "/webhook/**",
+        "function": "webhook"
+      },
+      {
         "source": "/auth/**",
         "function": "auth"
       },

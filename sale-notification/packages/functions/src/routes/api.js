@@ -1,7 +1,7 @@
 import Router from 'koa-router';
 import * as sampleController from '../controllers/sampleController';
 import settingsController from "../controllers/settingsController";
-import notificationsController from "../controllers/NotificationsController"
+import notificationsController from "../controllers/notificationsController"
 import {verifyRequest} from '@avada/shopify-auth';
 
 const router = new Router({

@@ -12,6 +12,8 @@ import Display from "./Display";
 import useFetchApi from "../../hooks/api/useFetchApi";
 import SettingsLoading from "../../components/SettingsLoading";
 import {api} from "../../helpers";
+import SettingToast from "../../components/Toast/SettingToast";
+import defaultSettings from "../../../../functions/src/default/defaultSettings";
 
 /**
  * Render a home page for overview
@@ -21,19 +23,12 @@ import {api} from "../../helpers";
  */
 export default function Settings() {
   const [selected, setSelected] = useState(0);
+  const [toastActive, setToastActive] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
-  const defaultSettings = {
-    position: 'top-left',
-    hideTimeAgo: false,
-    truncateProductName: true,
-    displayDuration: 5,
-    popsInterval: 2,
-    firstDelay: 10,
-    maxPopsDisplay: 20,
-    allowShow: 'all',
-    includedUrls: '',
-    excludedUrls: ''
-  };
+  const handleActiveToast = () => {
+    setToastActive(prev => !prev);
+  }
 
   const {data, setData, loading, setLoading} = useFetchApi('/settings', defaultSettings);
 
@@ -88,14 +83,14 @@ export default function Settings() {
   async function handleSaveAction(){
     try {
       setLoading(true);
-      const updateSettings = await api('/settings', 'PUT', data);
-      console.log(updateSettings)
+      await api('/settings', 'PUT', data);
+      setToastMessage("Save success.")
+      setToastActive(true);
     } catch (e) {
       console.log(e)
     } finally {
       setLoading(false);
     }
-
   }
 
   return (
@@ -127,6 +122,7 @@ export default function Settings() {
           </Layout.Section>
           <Footer/>
         </Layout>
+        <SettingToast active={toastActive} handleToast={handleActiveToast} message={toastMessage} />
       </Page>
     ));
 }
