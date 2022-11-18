@@ -7,7 +7,7 @@ const NotificationItem = ({item, page = 'notification', hideTimeAgo = false}) =>
   const {id, city, productName, country, productImage, timestamp, firstName} = item;
   const buyDate = new Date(timestamp);
   let calDay = Math.floor((new Date().getTime() - buyDate.getTime()) / (1000 * 3600 * 24));
-  calDay = calDay === 1 ? "a" : calDay;
+  calDay = calDay <= 1 ? "a" : calDay;
 
   const formatBuyDate = formatDateOnly(timestamp);
   const dm = formatBuyDate.slice(0, formatBuyDate.indexOf(",") + 1);

@@ -21,7 +21,7 @@
     "koa": "^2.8.1",
     "koa-ejs": "^4.2.0",
     "koa-router": "^7.4.0",
-    "shopify-api-node": "2.25.0",
+    "shopify-api-node": "3.11.3",
     "@google-cloud/firestore": "^6.4.1",
     "@koa/cors": "^3.4.3"
   },

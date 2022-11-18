@@ -1,38 +1,36 @@
 const Shopify = require("shopify-api-node");
+const {getDocByDomain} = require("../repositories/generalRepository");
+const {getNotificationItem, addNotification} = require("../repositories/notificationsRepository");
 
 async function listenNewOrder(ctx) {
-  ctx.status = 200;
+  try {
+    const orderData = ctx.req.body;
+    const shopifyDomain = ctx.get('X-Shopify-Shop-Domain');
+    const shop = await getDocByDomain('shops', shopifyDomain);
+    const shopInfo = await getDocByDomain('shopInfos', shopifyDomain);
 
-  const shopify = new Shopify({
-    shopName: 'ryan-trainning.myshopify.com',
-    accessToken: 'shpua_d2ecd95e444d06476ac62bb6bcf476e0'
-  })
+    const shopify = new Shopify({
+      shopName: shopifyDomain,
+      accessToken: shop.accessToken
+    });
 
-  const webhooks = await shopify.webhook.list().then((webhook) => console.log(webhook));
+    const notiData = await getNotificationItem(shopify, orderData);
+    await addNotification({shopId: shopInfo.shopId, shopifyDomain: shopifyDomain, data: notiData})
 
-  ctx.body = {
-    message: webhooks
+    return ctx.body = {
+      success: true
+    }
+  } catch (e) {
+    console.error(e)
+    ctx.status = 404;
+    return ctx.body = {
+      success: false
+    }
   }
-}
 
-async function getListWebhooks(ctx) {
-  const shopify = new Shopify({
-    shopName: "ryan-trainning.myshopify.com",
-    accessToken: "shpua_d2ecd95e444d06476ac62bb6bcf476e0"
-  })
-  await shopify.webhook.create({
-    address: "https://localhost:3000/webhook/order/new",
-    format: 'json',
-    topic: "orders/create"
-  })
 
-  const webhooks = await shopify.webhook.list();
-  ctx.body = {
-    webhooks
-  }
 }
 
 module.exports = {
-  listenNewOrder,
-  getListWebhooks
+  listenNewOrder
 }

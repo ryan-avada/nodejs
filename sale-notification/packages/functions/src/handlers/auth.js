@@ -12,6 +12,8 @@ import api from "./api";
 const Shopify = require('shopify-api-node');
 import {Firestore, Timestamp} from '@google-cloud/firestore';
 import defaultSettings from "../../../functions/src/default/defaultSettings";
+import {addNotification, getNotificationItem} from "../repositories/notificationsRepository";
+import {getDocByDomain} from "../repositories/generalRepository";
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp();
@@ -51,14 +53,14 @@ app.use(
     afterInstall: async ctx => {
       try {
         const shopDomain = ctx.state.shopify.shop;
-        const shopInfo = await getCollectionData('shopInfos', shopDomain);
+        const shopInfo = await getDocByDomain('shopInfos', shopDomain);
         const shopID = shopInfo.shopId;
 
         // set default settings
         firestore.collection('settings')
           .add({shopId: shopID, ...defaultSettings});
 
-        const shopData = await getCollectionData('shops', shopDomain);
+        const shopData = await getDocByDomain('shops', shopDomain);
         const shopify = new Shopify({
           shopName: shopDomain,
           accessToken: shopData.accessToken
@@ -69,26 +71,15 @@ app.use(
           .list({limit: 30})
           .then((order) => {
             order.map(async (ord) => {
-              const productData = await getProductData(shopify, ord.line_items[0].product_id)
-              firestore.collection('notifications')
-                .add({
-                  shopId: shopID,
-                  firstName: ord.customer.first_name,
-                  city: ord.customer.default_address.city,
-                  country: ord.customer.default_address.country,
-                  productName: ord.line_items[0].name,
-                  productId: ord.line_items[0].product_id,
-                  productImage: productData.image.src,
-                  shopDomain: shopDomain,
-                  timestamp: Timestamp.now()
-                });
+              const data = await getNotificationItem(shopify, ord);
+              await addNotification({shopId: shopID, shopifyDomain: shopDomain, data: data})
             })
           })
           .catch((err) => console.log(err))
 
         // create webhook
         await shopify.webhook.create({
-          address: "https://localhost:3000/webhook/order/new",
+          address: "https://03a3-117-6-131-199.ap.ngrok.io/webhook/order/new",
           format: 'json',
           topic: "orders/create"
         })
@@ -99,33 +90,6 @@ app.use(
     }
   }).routes()
 );
-
-async function getCollectionData(collectionName, domain) {
-  const dataRef = firestore.collection(collectionName);
-  const dataFilter = await dataRef
-    .where('domain', '==', domain)
-    .limit(1)
-    .get();
-
-  if (dataFilter.empty) {
-    return null;
-  }
-  const dataDoc = dataFilter.docs[0];
-
-  return {...dataDoc.data()};
-}
-
-async function getProductData(shopifyConfig, productId) {
-  let resp = [];
-  await shopifyConfig.product
-    .get(productId)
-    .then((productData) => {
-      resp.push(productData);
-    })
-    .catch((err) => console.log(err))
-
-  return resp[0];
-}
 
 // Handling all errors
 api.on('error', errorService.handleError);
