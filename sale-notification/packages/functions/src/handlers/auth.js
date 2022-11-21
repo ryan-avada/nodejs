@@ -8,18 +8,14 @@ import createErrorHandler from '../middleware/errorHandler';
 import firebase from 'firebase-admin';
 import * as errorService from '../services/errorService';
 import api from "./api";
-
-const Shopify = require('shopify-api-node');
-import {Firestore, Timestamp} from '@google-cloud/firestore';
-import defaultSettings from "../../../functions/src/default/defaultSettings";
+import Shopify from 'shopify-api-node';
 import {addNotification, getNotificationItem} from "../repositories/notificationsRepository";
 import {getDocByDomain} from "../repositories/generalRepository";
+import {createDefaultSetting, createWebhook, syncOrders} from "../services/InstallationService";
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp();
 }
-
-const firestore = new Firestore();
 
 // Initialize all demand configuration for an application
 const app = new App();
@@ -54,35 +50,38 @@ app.use(
       try {
         const shopDomain = ctx.state.shopify.shop;
         const shopInfo = await getDocByDomain('shopInfos', shopDomain);
+        const shopData = await getDocByDomain('shops', shopDomain);
         const shopID = shopInfo.shopId;
 
-        // set default settings
-        firestore.collection('settings')
-          .add({shopId: shopID, ...defaultSettings});
-
-        const shopData = await getDocByDomain('shops', shopDomain);
         const shopify = new Shopify({
           shopName: shopDomain,
           accessToken: shopData.accessToken
         })
-
         // sync 30 order
-        shopify.order
-          .list({limit: 30})
-          .then((order) => {
-            order.map(async (ord) => {
-              const data = await getNotificationItem(shopify, ord);
-              await addNotification({shopId: shopID, shopifyDomain: shopDomain, data: data})
-            })
-          })
-          .catch((err) => console.log(err))
 
-        // create webhook
-        await shopify.webhook.create({
-          address: "https://03a3-117-6-131-199.ap.ngrok.io/webhook/order/new",
-          format: 'json',
-          topic: "orders/create"
-        })
+        //Goi 30 order
+        // lay ra list prduct Id
+        // Unique list product id
+        // Goi 1 API call lay du product data
+        // merge 2 array orders vaf products
+
+        // shopify.order
+        //   .list({limit: 30})
+        //   .then((order) => {
+        //     order.map(async (ord) => {
+        //       const data = await getNotificationItem(shopify, ord);
+        //       await addNotification({shopId: shopID, shopifyDomain: shopDomain, data: data})
+        //     })
+        //   })
+        //   .catch((err) => console.log(err))
+        // syncNotificationsFromOrders(orders)
+
+        await Promise.all([
+          createWebhook(shopify),
+          //   createScripttag(),
+          syncOrders({shopify: shopify, shopId: shopID, shopifyDomain: shopDomain}),
+          createDefaultSetting(shopID)
+        ])
 
       } catch (e) {
         console.error(e)

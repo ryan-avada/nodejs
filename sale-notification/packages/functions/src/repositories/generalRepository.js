@@ -1,4 +1,4 @@
-import {Firestore, Timestamp} from '@google-cloud/firestore';
+import {Firestore} from '@google-cloud/firestore';
 
 const firestore = new Firestore();
 
@@ -8,7 +8,7 @@ const firestore = new Firestore();
  * @param domain
  * @returns {Promise<null|*>}
  */
-async function getDocByDomain(collectionName, domain) {
+export async function getDocByDomain(collectionName, domain) {
   const dataRef = firestore.collection(collectionName);
   const dataFilter = await dataRef
     .where('domain', '==', domain)
@@ -21,9 +21,4 @@ async function getDocByDomain(collectionName, domain) {
   const dataDoc = dataFilter.docs[0];
 
   return {...dataDoc.data()};
-}
-
-
-module.exports = {
-  getDocByDomain
 }

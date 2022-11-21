@@ -4,7 +4,7 @@ const {getSettings, saveSettings} = require("../repositories/settingsRepository"
 async function get(ctx) {
   try {
     const {shopID} = await getCurrentUserInstance(ctx);
-    const settings = await getSettings(shopID)
+    const settings = await getSettings({shopID: shopID})
 
     ctx.status = 200;
     return ctx.body = {
@@ -26,7 +26,7 @@ async function update(ctx) {
     const {shopID} = await getCurrentUserInstance(ctx);
     const postData = ctx.req.body;
 
-    const settingsResp = await saveSettings(postData, shopID)
+    const settingsResp = await saveSettings({data: postData, shopID: shopID})
 
     ctx.status = 200;
     return ctx.body = {

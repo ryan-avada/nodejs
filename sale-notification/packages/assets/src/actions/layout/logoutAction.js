@@ -1,7 +1,7 @@
 import {put, takeLatest} from 'redux-saga/effects';
 import {setLoading} from './setLoadingAction';
 import {setToast} from './setToastAction';
-import {auth} from '../../helpers';
+import {auth} from '../../helpers/helpers';
 
 export const logoutTypes = {
   LOGOUT: '@@layout/LOGOUT'

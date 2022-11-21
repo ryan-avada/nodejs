@@ -37,6 +37,10 @@
         "function": "auth"
       },
       {
+        "source": "/client/**",
+        "function": "client"
+      },
+      {
         "source": "/api/**",
         "function": "api"
       },

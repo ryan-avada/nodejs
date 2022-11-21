@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {api} from '../../helpers';
+import {api} from '../../helpers/helpers';
 
 /**
  * useFetchApi hook for fetch data from api with url
@@ -10,7 +10,7 @@ import {api} from '../../helpers';
  * @param initLoad
  * @param method
  * @param postData
- * @returns {{pagination: {}, data: *[], setData: (value: (((prevState: *[]) => *[]) | *[])) => void, setLoading: (value: (((prevState: boolean) => boolean) | boolean)) => void, refetch: (function(*=): Promise<void>), loading: boolean, setErrors: (value: (((prevState: *[]) => *[]) | *[])) => void, errors: *[], fetched: boolean}}
+ * @returns {{handleChangeInput: handleChangeInput, pagination: {}, data: *[], setData: (value: (((prevState: *[]) => *[]) | *[])) => void, setLoading: (value: (((prevState: boolean) => boolean) | boolean)) => void, refetch: ((function(*): Promise<undefined|*>)|*), loading: boolean, setErrors: (value: (((prevState: *[]) => *[]) | *[])) => void, errors: *[], fetched: boolean}}
  */
 export default function useFetchApi(
   url,
@@ -73,12 +73,21 @@ export default function useFetchApi(
       setLoading(false);
     }
   }
+  const handleChangeInput = (key, value) => {
+    setData(prevData => {
+      return {
+        ...prevData,
+        [key]: value
+      }
+    })
+  }
 
   useEffect(() => {
     if (initLoad) {
       fetchApi().then(() => {});
     }
   }, []);
+
 
   return {
     loading,
@@ -89,6 +98,7 @@ export default function useFetchApi(
     errors,
     setLoading,
     fetched,
-    setErrors
+    setErrors,
+    handleChangeInput
   };
 }

@@ -16,27 +16,33 @@ const Display = ({data, setData}) => {
   };
 
   return (
-    <FormLayout>
-      <DesktopPositionInput
-        label="Desktop Position"
-        helpText="The display position of the pop on your website."
-        onChange={(value) => setData('position', value)}
-        value={data.position}
-      />
-      <Checkbox
-        label="Hide time ago"
-        checked={data.hideTimeAgo}
-        onChange={(value) => setData('hideTimeAgo', value)}
-      />
-      <Checkbox
-        label="Truncate content text"
-        helpText="If your product name is long for one line, it will be truncated to 'Product na...'"
-        checked={data.truncateProductName}
-        onChange={(value) => setData('truncateProductName', value)}
-      />
+    <>
+      <Card.Section>
+        <FormLayout>
+          <DesktopPositionInput
+            label="Desktop Position"
+            helpText="The display position of the pop on your website."
+            onChange={(value) => setData('position', value)}
+            value={data.position}
+          />
+          <Checkbox
+            label="Hide time ago"
+            checked={data.hideTimeAgo}
+            onChange={(value) => setData('hideTimeAgo', value)}
+          />
+          <Checkbox
+            label="Truncate content text"
+            helpText="If your product name is long for one line, it will be truncated to 'Product na...'"
+            checked={data.truncateProductName}
+            onChange={(value) => setData('truncateProductName', value)}
+          />
+
+        </FormLayout>
+      </Card.Section>
       <Card.Section title="Timing">
         <Layout>
           <Layout.Section oneHalf>
+            {/*todo: Use FormLayout*/}
             <RangeSlider
               label="Display duration"
               helpText="How long each pop will display on your page."
@@ -89,8 +95,7 @@ const Display = ({data, setData}) => {
           </Layout.Section>
         </Layout>
       </Card.Section>
-
-    </FormLayout>
+    </>
   );
 };
 

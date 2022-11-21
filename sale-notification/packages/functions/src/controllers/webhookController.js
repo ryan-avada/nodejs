@@ -1,8 +1,8 @@
-const Shopify = require("shopify-api-node");
-const {getDocByDomain} = require("../repositories/generalRepository");
-const {getNotificationItem, addNotification} = require("../repositories/notificationsRepository");
+import Shopify from "shopify-api-node"
+import {getNotificationItems, addNotification} from "../repositories/notificationsRepository";
+import {getDocByDomain} from "../repositories/generalRepository";
 
-async function listenNewOrder(ctx) {
+export async function listenNewOrder(ctx) {
   try {
     const orderData = ctx.req.body;
     const shopifyDomain = ctx.get('X-Shopify-Shop-Domain');
@@ -14,8 +14,8 @@ async function listenNewOrder(ctx) {
       accessToken: shop.accessToken
     });
 
-    const notiData = await getNotificationItem(shopify, orderData);
-    await addNotification({shopId: shopInfo.shopId, shopifyDomain: shopifyDomain, data: notiData})
+    const notifications = await getNotificationItems({shopify: shopify, orders: [orderData]});
+    await addNotification({shopId: shopInfo.shopId, shopifyDomain: shopifyDomain, data: notifications[0]});
 
     return ctx.body = {
       success: true
@@ -27,10 +27,17 @@ async function listenNewOrder(ctx) {
       success: false
     }
   }
-
-
 }
 
-module.exports = {
-  listenNewOrder
+export async function test(ctx) {
+  const shopify = new Shopify({
+    shopName: 'ryan-trainning.myshopify.com',
+    accessToken: 'shpua_7946ea9b03d961643d3263a219e3f4ae'
+  });
+
+  // const orders = await syncOrders({shopify: shopify, shopId: '5kWhxa9LpCZWdhMDDsUd', shopifyDomain: 'ryan-trainning.myshopify.com'});
+const webhookList = await shopify.webhook.list();
+  ctx.body = {
+    message: webhookList
+  }
 }

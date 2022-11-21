@@ -1,7 +1,8 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {CalloutCard, FooterHelp, Layout, Link, Page, SettingToggle, TextStyle} from '@shopify/polaris';
-import api from '../../helpers';
+import api from '../../helpers/helpers';
 import Footer from "../Footer/Footer";
+import {STATUS_ACTIVATED, STATUS_DEACTIVATED} from "../../const/const";
 
 /**
  * Render a home page for overview
@@ -12,10 +13,10 @@ import Footer from "../Footer/Footer";
 export default function Home() {
   const [active, setActive] = useState(false);
 
-  const handleToggle = useCallback(() => setActive((active) => !active), []);
+  const handleToggle = () => setActive((active) => !active);
 
-  const contentStatus = active ? 'Deactivate' : 'Activate';
-  const textStatus = active ? 'activated' : 'deactivated';
+  const statusButton = active ? STATUS_DEACTIVATED : STATUS_ACTIVATED;
+  const statusText = active ? STATUS_ACTIVATED : STATUS_DEACTIVATED;
   return (
     <Page
       title="Home"
@@ -25,13 +26,13 @@ export default function Home() {
         <Layout.Section>
           <SettingToggle
             action={{
-              content: contentStatus,
+              content: statusButton.toUpperCase(),
               onAction: handleToggle,
             }}
             enabled={active}
           >
             This setting is{' '}
-            <TextStyle variation="strong">{textStatus}</TextStyle>
+            <TextStyle variation="strong">{statusText}</TextStyle>
             .
           </SettingToggle>
         </Layout.Section>

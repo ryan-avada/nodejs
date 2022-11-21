@@ -1,6 +1,6 @@
 const Router = require('koa-router');
-const productHandler = require('../handlers/products/productHandlers.js');
-const productInputValidate = require('../middleware/productInputMiddleware.js');
+const productHandler = require('../handlers/products/productHandlers');
+const productInputValidate = require('../middleware/productInputMiddleware');
 
 const router = new Router({
     prefix: '/api'

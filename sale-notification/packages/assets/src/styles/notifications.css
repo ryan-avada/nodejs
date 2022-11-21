@@ -2,61 +2,8 @@
   display: flex;
 }
 
-.notification-item {
-  position: relative;
-  padding: 1%;
-  display: flex;
-  border: 2px solid lightgray;
-  width: 50%;
-  border-radius: 5px;
-  line-height: 22px;
-  background-color: white;
-}
-
-.notification-item .content {
-  margin-left: 2%;
-  width: 100%;
-}
-
-.notification-item .button button span {
-  display: none;
-}
-
-.notification-item .button button {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-
-.notification-item .button button:hover {
-  text-decoration: none;
-}
-
-.notification-item .button button:before {
-  content: "\2716";
-}
-.notification-item .content .bottom {
-  display: flex;
-  width: 100%;
-}
-.notification-item .content .bottom .buy-time{
-  width: 50%;
-}
-.notification-item .content .bottom .author {
-  display: flex;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  padding: 1%;
-  color: #47c1bf;
-}
-
-.notification-item .content .bottom .author span {
-  margin: 0;
-}
-
 .notification-additional {
-  width: 50%;
+  width: 70%;
   text-align: right;
   line-height: 22px;
 }

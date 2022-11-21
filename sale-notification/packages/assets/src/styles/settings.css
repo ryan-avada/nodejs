@@ -2,62 +2,10 @@
   display: flex;
 }
 
-.setting-item {
-  position: relative;
-  padding: 1%;
-  display: flex;
-  border: 2px solid lightgray;
-  width: 100%;
-  border-radius: 5px;
-  line-height: 22px;
-  background-color: white;
-}
-
-.setting-item .content {
-  margin-left: 1%;
-  width: 100%;
-}
-
-.setting-item .button button span {
-  display: none;
-}
-
-.setting-item .button button {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-
-.setting-item .button button:hover {
-  text-decoration: none;
-}
-
-.setting-item .button button:before {
-  content: "\2716";
-}
-
-.setting-item .content .bottom {
-  display: flex;
-  width: 100%;
-}
-
-.setting-item .content .bottom .buy-time {
-  width: 50%;
-}
-
-.setting-item .content .bottom .author {
-  display: flex;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  padding: 1%;
-  color: #47c1bf;
-}
-
-.Polaris-Layout .Polaris-ResourceItem__ListItem {
-  list-style: none;
-}
-
 .setting-additional {
   display: none;
+}
+
+li:has(.setting-wrapper)  {
+  list-style-type: none;
 }

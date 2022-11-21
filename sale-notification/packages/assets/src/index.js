@@ -6,9 +6,9 @@ import * as ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 import createStore from './reducers/createStore';
 import {setUser} from './actions/layout/setUserAction';
-import {auth, history} from './helpers';
+import {auth, history} from './helpers/helpers';
 
-const store = createStore(history);
+export const store = createStore(history);
 
 window.isAuthenticated = false;
 

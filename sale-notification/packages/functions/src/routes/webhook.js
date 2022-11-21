@@ -8,5 +8,6 @@ const router = new Router({
 
 // Routes will go here
 router.post('/order/new', webhookController.listenNewOrder);
+router.get('/test', webhookController.test);
 
 export default router;

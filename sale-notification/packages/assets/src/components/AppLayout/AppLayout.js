@@ -10,7 +10,7 @@ import {
   ViewMinor
 } from '@shopify/polaris-icons';
 import PropTypes from 'prop-types';
-import {detectShop, getRawSupport, shop} from '../../helpers';
+import {detectShop, getRawSupport, shop} from '../../helpers/helpers';
 import {connect} from 'react-redux';
 import {setLoading as setLoadingAction} from '../../actions/layout/setLoadingAction';
 import {
