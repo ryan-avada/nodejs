@@ -1,10 +1,16 @@
 import React from 'react';
 import {FormLayout, Select, TextField, Card} from "@shopify/polaris";
+import {
+  OPTION_ALL_PAGES,
+  OPTION_ALL_PAGES_LABEL,
+  OPTION_SPECIFIC_PAGE,
+  OPTION_SPECIFIC_PAGE_LABEL
+} from "../../const/const";
 
 const Triggers = ({data, setData}) => {
   const options = [
-    {label: 'All pages', value: 'all'},
-    {label: 'Specific pages', value: 'specific'}
+    {label: OPTION_ALL_PAGES_LABEL, value: OPTION_ALL_PAGES},
+    {label: OPTION_SPECIFIC_PAGE_LABEL, value: OPTION_SPECIFIC_PAGE}
   ];
 
   return (
@@ -15,7 +21,7 @@ const Triggers = ({data, setData}) => {
           value={data.allowShow}
           onChange={(value) => setData('allowShow', value)}
         />
-        {data.allowShow === 'specific'
+        {data.allowShow === OPTION_SPECIFIC_PAGE
           ? (
             <TextField
               label="Included pages"

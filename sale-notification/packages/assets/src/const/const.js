@@ -15,4 +15,11 @@ export const TAB_DISPLAY_LABEL = 'Display';
 export const TAB_TRIGGERS_LABEL = 'Triggers';
 
 export const STATUS_ACTIVATED = 'activated';
-export const STATUS_DEACTIVATED= 'deactivated';
+export const STATUS_DEACTIVATED = 'deactivated';
+
+export const OPTION_ALL_PAGES = 'all';
+export const OPTION_SPECIFIC_PAGE = 'specific';
+
+export const OPTION_ALL_PAGES_LABEL = 'All pages';
+export const OPTION_SPECIFIC_PAGE_LABEL = 'Specific page';
+

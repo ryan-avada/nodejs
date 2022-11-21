@@ -30,13 +30,8 @@ import {
  */
 export default function Settings() {
   const [selected, setSelected] = useState(0);
-  const [toastActive, setToastActive] = useState(false);
   const [loadingButton, setLoadingButton] = useState(false)
   const {data, setData, loading, handleChangeInput: handleChangeFormData} = useFetchApi('/settings', defaultSettings);
-
-  const handleActiveToast = () => {
-    setToastActive(prev => !prev);
-  }
 
   const handleTabChange = useCallback(
     (selectedTabIndex) => setSelected(selectedTabIndex),
