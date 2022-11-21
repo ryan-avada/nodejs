@@ -38,6 +38,11 @@ export async function addNotification({shopId, shopifyDomain, data}) {
   })
 }
 
+/**
+ *
+ * @param shopDomain
+ * @returns {Promise<*>}
+ */
 export async function getNotificationsByDomain(shopDomain) {
   const querySnapshot = await collection.where('shopDomain', '==', shopDomain)
     .get();

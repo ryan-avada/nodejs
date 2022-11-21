@@ -1,5 +1,10 @@
 import {getNotificationsByDomain} from "../repositories/notificationsRepository";
 
+/**
+ *
+ * @param ctx
+ * @returns {Promise<{data: {}, success: boolean, message}|{data: *, success: boolean}>}
+ */
 export async function get(ctx) {
   try {
     const {shopDomain} = ctx.query;

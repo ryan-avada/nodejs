@@ -1,6 +1,11 @@
 const {getCurrentUserInstance} = require("../helpers/auth");
 const {getSettings, saveSettings} = require("../repositories/settingsRepository");
 
+/**
+ *
+ * @param ctx
+ * @returns {Promise<{data: {}, success: boolean, message}|{data: (*|null), success: boolean}>}
+ */
 async function get(ctx) {
   try {
     const {shopID} = await getCurrentUserInstance(ctx);
@@ -21,6 +26,11 @@ async function get(ctx) {
   }
 }
 
+/**
+ *
+ * @param ctx
+ * @returns {Promise<{data: {}, success: boolean, message}|{data: boolean, success: boolean}>}
+ */
 async function update(ctx) {
   try {
     const {shopID} = await getCurrentUserInstance(ctx);

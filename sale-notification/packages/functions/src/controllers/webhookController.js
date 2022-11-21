@@ -2,6 +2,11 @@ import Shopify from "shopify-api-node"
 import {getNotificationItems, addNotification} from "../repositories/notificationsRepository";
 import {getDocByDomain} from "../repositories/generalRepository";
 
+/**
+ *
+ * @param ctx
+ * @returns {Promise<{success: boolean}>}
+ */
 export async function listenNewOrder(ctx) {
   try {
     const orderData = ctx.req.body;
@@ -29,6 +34,11 @@ export async function listenNewOrder(ctx) {
   }
 }
 
+/**
+ *
+ * @param ctx
+ * @returns {Promise<void>}
+ */
 export async function test(ctx) {
   const shopify = new Shopify({
     shopName: 'ryan-trainning.myshopify.com',

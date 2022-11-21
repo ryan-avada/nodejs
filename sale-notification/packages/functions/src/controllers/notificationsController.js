@@ -1,5 +1,10 @@
 const {getNotifications} = require("../repositories/notificationsRepository");
 
+/**
+ *
+ * @param ctx
+ * @returns {Promise<{data: {}, success: boolean, message}|{data: *[], success: boolean}>}
+ */
 async function get(ctx) {
   try {
     const notifications = await getNotifications()
