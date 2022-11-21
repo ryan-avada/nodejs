@@ -1,1 +1,12 @@
-console.log("This is the script tag");
+import DisplayManager from './managers/DisplayManager';
+import ApiManager from './managers/ApiManager';
+
+console.log('AVADA Sime Sales Pop initialized');
+
+(async () => {
+  const apiManager = new ApiManager();
+  const displayManager = new DisplayManager();
+  const {notifications, settings} = await apiManager.getNotifications();
+  displayManager.initialize({notifications, settings});
+})()
+
