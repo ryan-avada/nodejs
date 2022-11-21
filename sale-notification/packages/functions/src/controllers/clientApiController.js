@@ -1,11 +1,13 @@
-// const {getNotifications} = require("../repositories/notificationsRepository");
+import {getNotificationsByDomain} from "../repositories/notificationsRepository";
 
-async function get(ctx) {
+export async function get(ctx) {
   try {
-    // const notifications = await getNotifications()
+    const {shopDomain} = ctx.query;
+    const notifications = await getNotificationsByDomain(shopDomain);
+
     ctx.status = 200;
     return ctx.body = {
-      data: {},
+      data: notifications,
       success: true
     }
   } catch (e) {
@@ -16,8 +18,4 @@ async function get(ctx) {
       message: e
     }
   }
-}
-
-module.exports = {
-  get
 }

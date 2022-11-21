@@ -15,7 +15,7 @@ const collection = firestore.collection('notifications');
  * @returns {Promise<*[]>}
  */
 export async function getNotifications() {
-  const querySnapshot =await collection.get();
+  const querySnapshot = await collection.get();
 
   return querySnapshot.docs.map(doc => ({
     id: doc.id, ...doc.data()
@@ -36,6 +36,15 @@ export async function addNotification({shopId, shopifyDomain, data}) {
     timestamp: new Date(),
     ...data
   })
+}
+
+export async function getNotificationsByDomain(shopDomain) {
+  const querySnapshot = await collection.where('shopDomain', '==', shopDomain)
+    .get();
+
+  return querySnapshot.docs.map(doc => ({
+    id: doc.id, ...doc.data()
+  }))
 }
 
 /**
