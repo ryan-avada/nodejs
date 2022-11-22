@@ -9,9 +9,8 @@ import firebase from 'firebase-admin';
 import * as errorService from '../services/errorService';
 import api from "./api";
 import Shopify from 'shopify-api-node';
-import {addNotification, getNotificationItem} from "../repositories/notificationsRepository";
 import {getDocByDomain} from "../repositories/generalRepository";
-import {createDefaultSetting, createWebhook, syncOrders} from "../services/InstallationService";
+import {createDefaultSetting, createWebhook, registerSciptTag, syncOrders} from "../services/InstallationService";
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp();
@@ -65,20 +64,9 @@ app.use(
         // Goi 1 API call lay du product data
         // merge 2 array orders vaf products
 
-        // shopify.order
-        //   .list({limit: 30})
-        //   .then((order) => {
-        //     order.map(async (ord) => {
-        //       const data = await getNotificationItem(shopify, ord);
-        //       await addNotification({shopId: shopID, shopifyDomain: shopDomain, data: data})
-        //     })
-        //   })
-        //   .catch((err) => console.log(err))
-        // syncNotificationsFromOrders(orders)
-
         await Promise.all([
           createWebhook(shopify),
-          //   createScripttag(),
+          registerSciptTag(shopify),
           syncOrders({shopify: shopify, shopId: shopID, shopifyDomain: shopDomain}),
           createDefaultSetting(shopID)
         ])
