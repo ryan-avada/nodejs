@@ -18,6 +18,7 @@ export default class DisplayManager {
 
   showPopup({notifications, settings, index = 0}) {
     const {firstName, city, country, productName, timestamp, productImage} = notifications[index];
+    const {popsInterval, displayDuration} = settings;
 
     const container = document.querySelector('#Avada-SalePop');
     render(
@@ -38,8 +39,8 @@ export default class DisplayManager {
         if (notifications[index+1]) {
           this.showPopup({notifications, settings, index: index + 1})
         }
-      }, settings.popsInterval * 1000)
-    }, settings.displayDuration * 1000)
+      }, popsInterval * 1000)
+    }, displayDuration * 1000)
   }
 
   fadeOut() {

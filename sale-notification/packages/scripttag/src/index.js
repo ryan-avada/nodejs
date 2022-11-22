@@ -6,15 +6,15 @@ import moment from "moment";
   const apiManager = new ApiManager();
   const displayManager = new DisplayManager();
   const {notifications, settings} = await apiManager.getNotifications();
-  const {maxPopsDisplay} = settings;
+  const {maxPopsDisplay, firstDelay} = settings;
 
   const notiList = notifications.sort((prev, current) => {
     return moment(current.timestamp).valueOf() - moment(prev.timestamp).valueOf()
-  }).slice(0, settings.maxPopsDisplay - 1)
+  }).slice(0, maxPopsDisplay - 1)
 
 
   setTimeout(() => {
     displayManager.initialize({notifications: notiList, settings});
-  }, settings.firstDelay * 1000)
+  }, firstDelay * 1000)
 })()
 
