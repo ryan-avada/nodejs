@@ -1,6 +1,6 @@
-import {insertAfter} from '../helpers/insertHelpers';
-import {render} from 'preact';
 import React from 'preact/compat';
+import {render} from 'preact';
+import {insertAfter} from '../helpers/insertHelpers';
 import {NotificationPopup} from '../components/NotificationPopup/NotificationPopup';
 
 export default class DisplayManager {

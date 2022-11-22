@@ -1,6 +1,6 @@
 import React from 'react';
-import './NoticationPopup.scss';
 import moment from 'moment';
+import './NoticationPopup.scss';
 import {truncateString} from '@avada/assets/src/helpers/utils';
 
 export const NotificationPopup = ({
