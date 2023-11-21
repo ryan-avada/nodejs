@@ -15,7 +15,9 @@
     "koa": "^2.13.1",
     "koa-body": "^4.2.0",
     "koa-router": "^10.0.0",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "koa-ejs": "4.3.0",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
