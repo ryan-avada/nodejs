@@ -1,6 +1,7 @@
 import Shopify from "shopify-api-node"
 import {getNotificationItems, addNotification} from "../repositories/notificationsRepository";
 import {getDocByDomain} from "../repositories/generalRepository";
+import {syncOrders} from "../services/InstallationService";
 
 /**
  *
@@ -45,9 +46,8 @@ export async function test(ctx) {
     accessToken: 'shpua_7946ea9b03d961643d3263a219e3f4ae'
   });
 
-  // const orders = await syncOrders({shopify: shopify, shopId: '5kWhxa9LpCZWdhMDDsUd', shopifyDomain: 'ryan-trainning.myshopify.com'});
-const webhookList = await shopify.webhook.list();
+  const hookList = await syncOrders({shopify: shopify, shopifyDomain: 'ryan-trainning.myshopify.com', shopId: '5kWhxa9LpCZWdhMDDsUd'});
   ctx.body = {
-    message: webhookList
+    message: hookList
   }
 }

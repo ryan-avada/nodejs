@@ -6,8 +6,9 @@ export default class ApiManager {
   };
 
   getApiData = async () => {
-    const apiUrl = `YOUR API URL`;
-    const {notifications, settings} = await makeRequest(apiUrl);
+    const shopDomain = window.location.hostname;
+    const apiUrl = 'https://localhost:3000/client/notifications?shopDomain=' + shopDomain;
+    const {notifications, settings} = await makeRequest({url: apiUrl});
 
     return {notifications, settings};
   };

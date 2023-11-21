@@ -86,6 +86,6 @@ export async function getNotificationParams(orders) {
     country: order.customer.default_address.country,
     productName: order.product.title,
     productId: order.product.id,
-    productImage: order.product.image.src,
+    productImage: order.product.image ? order.product.image.src : "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/681px-Placeholder_view_vector.svg.png",
   }));
 }
